@@ -12,7 +12,10 @@ const Introducer = () => {
     <ViewFrame>
         <TransPanel>
             <Container>
-                Introducer
+                <h1>Alex • 25</h1>
+                This website serves as a portfolio for the knowledge and skills I've acquired throughout the my years.
+                Starting on Java, the first major programming language that made me design software in a object-oriented manner.
+                Then, following it up with Javascript, I learned both front-end and back-end development and how the two should operate together, with it also learning HTML, CSS and NodeJS.
             </Container>
         </TransPanel>
     </ViewFrame>

@@ -13,7 +13,7 @@ export const ViewFrame = styled.div`
 export const TransPanel = styled.div`
     width: 80%;
     height: 80%;
-    background-image: radial-gradient(#ffffff40, #ffffff20);
+    background-image: radial-gradient(#5c1e1e40, #ffffff20);
     border-radius: 8vh;
     position: relative;
     z-index: 3;
