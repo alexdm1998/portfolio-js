@@ -9,7 +9,6 @@ import dune_fade from './assets/Fade_Dune.svg'
 import dune_distant from './assets/Distant_Dune.svg'
 import stars from './assets/stars.png'
 import { useState } from 'react'
-import { HoverScaleWrapper } from './components/onHoverScale.style'
 
 const Background = styled.div`
   position: relative;
@@ -22,34 +21,6 @@ const Background = styled.div`
   }
 `
 
-
-const WrapperSun = styled.div`
-  position: absolute;
-  top: -38vw;
-  right: -18vw;
-  width: 50vw;
-  height: 50vw;
-  float: right;
-
-  @media (orientation: portrait){
-    top: -30vh;
-    right: 0;
-    left: 0;
-    margin-left: calc((100vw - 50vh)/2);
-    margin-right: calc((100vw - 50vh)/2);
-    width: 50vh;
-    height: 50vh;
-  }
-`
-
-const Sun = styled.div`
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-image: linear-gradient(to bottom right, #910000 10%, #c62b00);
-  box-shadow: 0 0 40px #ff000089,
-  0 0 60px #9152529e;
-`
 const duneYOffset = -20;
 const Dune = styled.div`
   position: absolute;
@@ -199,11 +170,6 @@ function App() {
 
   return (
     <Background>
-        <WrapperSun>
-          <HoverScaleWrapper style={{borderRadius:"50%"}}>
-            <Sun style={styleSun}></Sun>
-          </HoverScaleWrapper>
-        </WrapperSun>
         <Dune style={styleDune}></Dune>
         <Dune_Fade style={styleDuneFade}></Dune_Fade>
         <Dune_Back style={styleDuneBack}></Dune_Back>

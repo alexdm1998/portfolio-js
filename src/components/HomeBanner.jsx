@@ -109,6 +109,43 @@ const RightPlanet = styled(Planet)`
     height: 100%;
 `
 
+
+
+
+const WrapperSun = styled.div`
+    position: fixed;
+    top: -38vw;
+    right: -18vw;
+    width: 50vw;
+    height: 50vw;
+    float: right;
+
+    @media (orientation: portrait){
+    top: -30vh;
+    right: 0;
+    left: 0;
+    margin-left: calc((100vw - 50vh)/2);
+    margin-right: calc((100vw - 50vh)/2);
+    width: 50vh;
+    height: 50vh;
+  }
+`
+const Sun = styled.div`
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-image: linear-gradient(to bottom left, #1f0000, #910000 50%, #c62b00);
+    background-size: 200% 200%;
+    background-position: bottom left;
+    transition: background-position 1s;
+    box-shadow: 0 0 40px #ff000089,
+    0 0 60px #9152529e;
+
+    &:hover{
+        background-position: top right;
+    }
+`
+
 const HomeBanner = ({planetsParallax, conditionalRenderer}) => {
     const [contourLPlanet, setContLPlanet] = useState("");
     const [contourRPlanet, setContRPlanet] = useState("");
@@ -148,8 +185,17 @@ const HomeBanner = ({planetsParallax, conditionalRenderer}) => {
         contourHandler();
     }, [selectedPlanet]);
         
+
+
+
+
   return (
     <HomeFrame>
+        <WrapperSun>
+            <HoverScaleWrapper style={{borderRadius:"50%"}}>
+                <Sun></Sun>
+            </HoverScaleWrapper>
+        </WrapperSun>
         <WrapperLP style={styleLPlanetnMoon}>
             <HoverScaleWrapper style={{borderRadius:"50%"}}>
                 <LeftPlanet style={styleLPlanet} onMouseEnter={() => setContLPlanet(whiteContour)} onMouseLeave={contourHandler} onMouseDown={() => {conditionalRenderer("LP"); setSelectedPlanet("LP")}}></LeftPlanet>
