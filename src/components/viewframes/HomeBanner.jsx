@@ -12,7 +12,7 @@ const HomeFrame = styled(ViewFrame)`
 `
 
 const HomeBanner = ({planetsParallax}) => {
-    const styleLPlanet = {
+    /* const styleLPlanet = {
         outline: contourLPlanet
     };
     
@@ -23,7 +23,7 @@ const HomeBanner = ({planetsParallax}) => {
     
     const styleLPlanetnMoon = {
         transform: `translate(0px, ${planetsParallax}px)`
-    };
+    }; */
     
   return (
     <HomeFrame>
