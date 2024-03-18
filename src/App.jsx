@@ -1,14 +1,17 @@
-import styled, { keyframes } from 'styled-components'
-import Contact from './components/Contact'
-import Gallery from './components/Gallery'
-import Introducer from './components/Introducer'
-import HomeBanner from './components/HomeBanner'
+import styled, {keyframes } from 'styled-components'
+import Contact from './components/viewframes/Contact'
+import Gallery from './components/viewframes/Gallery'
+import Introducer from './components/viewframes/Introducer'
+import HomeBanner from './components/viewframes/HomeBanner'
 import dune from './assets/Dune.svg'
 import dune_back from './assets/Back_Dune.svg'
 import dune_fade from './assets/Fade_Dune.svg'
 import dune_distant from './assets/Distant_Dune.svg'
 import stars from './assets/stars.png'
-import { useState } from 'react'
+import { useState} from 'react'
+import { ThemeContextProvider } from './hooks/ThemeContext'
+import { useNavigation } from './hooks/NavigationContext'
+
 
 const Background = styled.div`
   position: relative;
@@ -123,8 +126,6 @@ function App() {
   const [duneBackHeight, setDuneBackHeight] = useState();
   const [duneDistantHeight, setDuneDistantHeight] = useState();
   const [planetsParallax, setPlanetsParallax] = useState();
-  const [isClickedLP, setIsClickedLP] = useState(false);
-  const [isClickedRP, setIsClickedRP] = useState(false);
   
   const styleSun = {transform: `translate(0px, ${sunHeight}vh)`};
   const styleDune = {transform: `translate(0px, ${duneHeight}vh)`};
@@ -149,37 +150,21 @@ function App() {
     }
   }
 
-
-
-  //A key-value pair for the setState fuctions to be called,
-  //thus conditionaly rendering the appropriate components
-  const condKeyValPair = {
-    LP: setIsClickedLP,
-    RP: setIsClickedRP
-  };
-
-  function conditionalRenderer(identifier){
-    for(const key in condKeyValPair){
-      if(key == identifier){
-        condKeyValPair[key](true);
-      }else{
-        condKeyValPair[key](false);
-      }
-    }
-  }
-
+  const navigation = useNavigation();
   return (
-    <Background>
-        <Dune style={styleDune}></Dune>
-        <Dune_Fade style={styleDuneFade}></Dune_Fade>
-        <Dune_Back style={styleDuneBack}></Dune_Back>
-        <Dune_Distant style={styleDuneDistant}></Dune_Distant>
-        <Container onScroll={scrollEvent}>
-          <HomeBanner planetsParallax={planetsParallax} conditionalRenderer={conditionalRenderer}></HomeBanner>
-          {isClickedLP && <><Introducer></Introducer><Gallery></Gallery><Contact></Contact></>}
-          {isClickedRP && <Sign src={stars}></Sign>}
-        </Container>
-    </Background>
+    <ThemeContextProvider>
+        <Background>
+            <Dune style={styleDune}/>
+            <Dune_Fade style={styleDuneFade}/>
+            <Dune_Back style={styleDuneBack}/>
+            <Dune_Distant style={styleDuneDistant}/>
+            <Container onScroll={scrollEvent}>
+              <HomeBanner planetsParallax={planetsParallax}/>
+              {navigation == "LP" && <><Introducer/><Gallery/><Contact/></>}
+              {navigation == "RP" && <Sign src={stars}/>}
+            </Container>
+        </Background>
+    </ThemeContextProvider>
   )
 }
 
