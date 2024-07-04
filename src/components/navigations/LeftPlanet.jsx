@@ -40,24 +40,24 @@ const Moon = styled.div`
     width: 30%;
     height: 30%;
     border-radius: 50%;
-    background-image: linear-gradient(to bottom right, #9e4f4f 40%, #aa2601);
+    background-image: linear-gradient(to bottom left, #9e4f4f 17%, #aa2601 33%, #3e4d5e 66%, #000000);
+    background-size: 300% 300%;
+    background-position: ${props => props.$isDarkMode === "light" ? "top right" : "bottom left"};
     animation: ${AnimationMoon} 60s linear infinite;
+    outline: ${props => props.$isFocus ? "1px solid #ffffffb8" : ""};
+    transition: background-position 5s;
 
     @media (orientation: portrait) {
         animation: ${AnimationMoonPortrait} 30s linear infinite;
     }
 `
 
-
-
-
-
 //Position and transition
 const PositionWrapper = styled.div`
     pointer-events: all;
     position: absolute;
     left: 5vw;
-    top: 5vw;
+    top: 16dvh;
     width: 8vw;
     height: 8vw;
     
@@ -95,12 +95,11 @@ export const LeftPlanet = () => {
     useEffect(() => {
         OutlineHandler();
     }, [navigation])
-    
     return(
         <PositionWrapper>
             <HoverScaleWrapper style={{borderRadius:"50%"}}>
                 <Planet $isDarkMode={theme} $isFocus={isFocus} onClick={()=>{select(tag)}} onMouseEnter={() => setFocus(true)} onMouseLeave={OutlineHandler}></Planet>
-                <Moon/>
+                <Moon $isDarkMode={theme} $isFocus={isFocus} onClick={()=>select(tag)} onMouseEnter={()=>setFocus(true)} onMouseLeave={OutlineHandler}/>
             </HoverScaleWrapper>
         </PositionWrapper>
     )

@@ -10,7 +10,7 @@ const PositionWrapper = styled.div`
     pointer-events: all;
     position: absolute;
     left: 35vw;
-    top: 2vw;
+    top: 12dvh;
     width: 2vw;
     height: 2vw;
 

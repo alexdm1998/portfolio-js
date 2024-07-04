@@ -1,6 +1,5 @@
-import React, {useState} from "react";
+import React from "react";
 import styled from "styled-components";
-import { HoverScaleWrapper } from "./styles/onHoverScale.style";
 import { useTheme, useThemeSwitch } from "../hooks/ThemeContext";
  
 
@@ -11,6 +10,7 @@ const WrapperSun = styled.div`
     width: 50vw;
     height: 50vw;
     float: right;
+    transition: transform 0.2s ease;
 
     @media (orientation: portrait){
     top: -30vh;
@@ -27,33 +27,32 @@ const SunDiv = styled.div`
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-image: linear-gradient(to bottom left, #1f0000, #910000 50%, #c62b00);
+    background-image: linear-gradient(to bottom left, #910000, #c62b00 50%, #1f0000);
     background-size: 200% 200%;
-    background-position: ${props => props.$isDarkSun === "light" ? "bottom left" : "top right"};
-    transition: background-position 1s;
+    background-position: ${props => props.$isDarkSun === "light" ? "top right" : "bottom left"};
+    transition: background-position 5s;
     box-shadow: 0 0 40px #ff000089,
     0 0 60px #9152529e;
-
-    &:hover{
-        background-position: ${props => props.$isDarkSun === "light" ? "top right" : "bottom left"};
-    }
 `
 
 
-export const Sun = () => {
+export const Sun = ({parallaxValue}) => {
     const theme = useTheme();
     const switchTheme = useThemeSwitch();
-    const [sunTheme, setSunTheme] = useState("light");
 
-    function SwitchSunTheme(){
-        setSunTheme(theme);
+    let parallaxStyle;
+    if(!window.matchMedia("(orientation: portrait)").matches){ //Perhaps only make this verification run on change of orientation and not every mount.
+        parallaxStyle = {
+            transform: `translate(0px, ${parallaxValue * 0.01}vh)`
+        }
+    }else{
+        parallaxStyle = {
+            transform: `translate(0px, ${parallaxValue}vh)`
+        }
     }
-
     return(
-        <WrapperSun>
-            <HoverScaleWrapper style={{borderRadius:"50%"}}>
-                <SunDiv $isDarkSun={sunTheme} onClick={switchTheme} onMouseLeave={SwitchSunTheme}/>
-            </HoverScaleWrapper>
+        <WrapperSun style={parallaxStyle}>
+            <SunDiv $isDarkSun={theme} onClick={switchTheme}/>
         </WrapperSun>
     )
 }
