@@ -74,13 +74,15 @@ export const Dashboard = () => {
   const [hasAnimationEnded, setHasAnimationEnded] = useState(false);
 
   useEffect(() => {
-    /* if (toFetch) {
-      fetch("http://192.168.1.229:5000/weather/famalicao")
+    if (toFetch) {
+      fetch("https://portfolio-backend-5ach.onrender.com/weather/famalicao")
         .then((response) => response.json())
         .then((data) => {
           setWeatherData(data);
           setHasReceived(true);
           setHasFailedConnection(false);
+
+          console.log(data)
         })
         .catch((error) => {
           console.log(error);
@@ -88,7 +90,7 @@ export const Dashboard = () => {
           setHasReceived(false);
         });
       setToFetch(false);
-    } */
+    }
   }, [toFetch]);
 
   return (
