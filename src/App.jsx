@@ -1,29 +1,27 @@
-import styled, {keyframes } from 'styled-components'
-import Contact from './components/viewframes/Contact'
-import Gallery from './components/viewframes/Gallery'
-import Introducer from './components/viewframes/Introducer'
-import HomeBanner from './components/viewframes/HomeBanner'
-import stars from './assets/stars.png'
-import { useState} from 'react'
-import { useTheme } from './hooks/ThemeContext'
-import { useNavigation } from './hooks/NavigationContext'
-import ThreeCanvas from './components/viewframes/ThreeCanvas'
-
-
-const Navbar = styled.nav`
-  position: fixed;
-  top: 0px;
-  height: 5dvh;
-  width: 100%;
-  border-bottom: 1px solid #d8d8d873;
-  z-index: 2;
-`
+import { useState, useRef, useEffect } from "react";
+import styled from "styled-components";
+import { Hero } from "./components/hero/Hero";
+import Gallery from "./components/containers/Gallery";
+import Introducer from "./components/containers/Introducer";
+import Contact from "./components/containers/Contact";
+import { Navbar } from "./components/navbar/Navbar";
+import { useTheme } from "./contexts/ThemeContext";
+import { useNavigation } from "./contexts/NavigationContext";
 
 const Background = styled.div`
   position: relative;
-  background-image: linear-gradient(to bottom left, #df3737,  #b0411f,#994f16 33%, #462299 66%, #242d93 80%, #0c031c);
+  background-image: linear-gradient(
+    to bottom left,
+    #df3737,
+    #b0411f,
+    #994f16 33%,
+    #462299 66%,
+    #242d93 80%,
+    #0c031c
+  );
   background-size: 300% 300%;
-  background-position: ${props => props.$isDarkMode === "light" ? "top right" : "bottom left"};
+  background-position: ${(props) =>
+    props.$isDarkMode === "light" ? "top right" : "bottom left"};
   transition: background-position 5s;
   overflow: hidden;
   z-index: 1;
@@ -31,7 +29,7 @@ const Background = styled.div`
   @media (orientation: portrait) {
     background-image: radial-gradient(ellipse at top, #df3737, #bc7100);
   }
-`
+`;
 
 const Container = styled.div`
   pointer-events: all;
@@ -40,52 +38,73 @@ const Container = styled.div`
   scroll-behavior: smooth;
   overflow-y: auto;
   scrollbar-width: none;
-  &::-webkit-scrollbar{
+  &::-webkit-scrollbar {
     display: none;
   }
   z-index: 3;
-`
+`;
 
-const SignAnimation = keyframes`
-  0% {
-    -webkit-mask-position: bottom;
-  }
-`
-
-const Sign = styled.img`
-  height: 100px;
-  left: 10%;
-  position: absolute;
-  -webkit-mask-image: linear-gradient(to top, transparent, transparent 25%, #00000078 50%, #000000da 75%, #000000da);
-  -webkit-mask-position: 0% 0;
-  -webkit-mask-size: 100% 400%;
-  animation: ${SignAnimation} 4s linear 1 alternate;
-`
-
-function App() {
-  const navigation = useNavigation(); //Navigation Context
+export const App = () => {
+  //Contexts
+  const navigation = useNavigation();
   const theme = useTheme();
-  const [parallaxFactor, SetParallaxFactor] = useState();
+  //Variables
+  const homebanner_ref = useRef(null);
+  const [parallaxFactor, setParallaxFactor] = useState();
+  const [navbarRender, setNavbarRender] = useState(true);
+
+  //Parallax logic
   let scroll;
   const scrollEvent = (e) => {
     scroll = e.target.scrollTop;
-    if(!window.matchMedia("(orientation: portrait)").matches){SetParallaxFactor(scroll * (0.12));} //Parallax for non-portrait mode
-    else{SetParallaxFactor(scroll * (0.02));} //Parallax for portrait mode
+    if (!window.matchMedia("(orientation: portrait)").matches) {
+      setParallaxFactor(scroll * 0.12);
+    } else {
+      setParallaxFactor(scroll * 0.02);
+    }
+  };
+
+  //Intersection logic for navbar render
+  const intersectionOptions = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.25,
+  };
+
+  function intersectionEvent(entries) {
+    if (entries[0].isIntersecting == true) {
+      setNavbarRender(true);
+    }
+    if (entries[0].isIntersecting == false) {
+      setNavbarRender(false);
+    }
   }
-  
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(intersectionEvent,intersectionOptions); //prettier-ignore
+    if (homebanner_ref.current) observer.observe(homebanner_ref.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [homebanner_ref.current]);
 
   return (
     <>
-      <Navbar/>
+      <Navbar shouldRender={navbarRender} />
       <Background $isDarkMode={theme}>
-          <Container onScroll={scrollEvent}>
-            <HomeBanner parallaxValue={parallaxFactor}/>
-            {navigation == "LP" && <><Introducer/><Gallery/><Contact/></>}
-            {navigation == "RP" && <><ThreeCanvas></ThreeCanvas><Sign src={stars}/></>}
-          </Container>
+        <Container onScroll={scrollEvent}>
+          <Hero parallaxValue={parallaxFactor} ref={homebanner_ref} />
+          {navigation == "LP" && (
+            <>
+              <Introducer />
+              <Gallery />
+              <Contact />
+            </>
+          )}
+          {navigation == "RP"}
+        </Container>
       </Background>
     </>
-  )
-}
-
-export default App
+  );
+};
