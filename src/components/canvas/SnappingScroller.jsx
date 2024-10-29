@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useElementDimensions } from "@hooks/useElementDimensions";
 
 const Container = styled.div`
   position: absolute;
@@ -52,16 +53,8 @@ const FocusLine = styled.div`
   left:0;
   width: 50%;
   height: 10px;
-  transform: translate(0%, -30%);
+  transform: translate(0%, -50%);
 `
-
-const Image = styled.img`
-  position: relative;
-
-  width: 100px;
-  height:100px;
-`
-
 
 ///Auxiliary functions
 function easeInOutQuad(t) {
@@ -72,6 +65,8 @@ function clamp(value, min, max){
   return Math.min(Math.max(value, min), max)
 }
 
+
+//Component
 export const SnappingScroller = ({ data, onFocus}) => {
   const gridRef = useRef(null);
   const cardsRef = useRef([]);
@@ -81,9 +76,13 @@ export const SnappingScroller = ({ data, onFocus}) => {
   const cardSnappingPositions = useRef([])      //The center positions of each card, starting at 0
   const focusRef = useRef(null);
   const [imageURIs, setImageURIs] = useState([])
+  const lineOfFocusRef = useRef(undefined)
   
 
-  //Grid and Card Properties
+  const {elementRef: focusLineRef, getDimensions: getFocusLineDimensions} = useElementDimensions();
+
+
+  //Element Properties
   function getGridProperties() {
     if (gridRef.current) {
       const { top: top, height: height } = gridRef.current.getBoundingClientRect();
@@ -93,15 +92,19 @@ export const SnappingScroller = ({ data, onFocus}) => {
     }
     return undefined;
   }
-
+  
   function getCardProperties(index) {
     if (cardsRef.current && cardsRef.current[index] != null ) {
-      const { top: top, height: height } = cardsRef.current[index].getBoundingClientRect();
-      return { top, height, position: top + height / 2 };
+      const { top: top, height: height, width: width, left:left } = cardsRef.current[index].getBoundingClientRect();
+      return { top, height, centerY: top + height / 2, centerX: left + width/2 };
     }
     return undefined;
   }
   
+  function getLineOfFocusProperties(){
+    const {top: top, left: left, width: width, height: height} = lineOfFocusRef.current.getBoundingClientRect();
+    return {top, left, width, height, centerY: top + height/2, centerX: left + width/2}
+  }
 
   ///Triggers when the grid scrolls
   function scrollHandler() {
@@ -111,14 +114,14 @@ export const SnappingScroller = ({ data, onFocus}) => {
   function applyTransformation(){
     const { top: gridTop, height: gridHeight } = getGridProperties();
     cardsRef.current.forEach((card, index) => {
-      const { position: cardPosition } = getCardProperties(index);
-      const cardRelativePosition = cardPosition - gridTop; //Relative to the grid
-      const cardNormalizedPosition = cardRelativePosition / gridHeight; //Normalized to the grid's height
+      const { centerY: cardCenterY } = getCardProperties(index);
+      const cardRelativeCenterY = cardCenterY - gridTop; //Relative to the grid
+      const cardNormalizedCenterY = cardRelativeCenterY/ gridHeight; //Normalized to the grid's height
 
-      if (cardNormalizedPosition <= 1 && cardNormalizedPosition >= 0) {
-        const translation = Math.sin(cardNormalizedPosition * Math.PI) * 100;
+      if (cardNormalizedCenterY <= 1 && cardNormalizedCenterY >= 0) {
+        const translation = Math.sin(cardNormalizedCenterY * Math.PI) * 100;
         card.style.transform = `translate(-${translation}%, 0%)`;
-        card.style.opacity = Math.sin(Math.PI * cardNormalizedPosition)
+        card.style.opacity = Math.sin(Math.PI * cardNormalizedCenterY)
       }else{
         card.style.transform = `translate(0%, 0%)`;
         card.style.opacity = 0;
@@ -181,16 +184,30 @@ export const SnappingScroller = ({ data, onFocus}) => {
       animateScroll(timestamp, initialScroll, amountToScroll);
     }
     
+    function cleanUpFunction(initialScroll, amountToScroll){ //This function certifies that the final scroll position is exactly the one requested initially.
+      gridRef.current.scrollTo(0, initialScroll + amountToScroll);
+    }
+
     let duration = 500;
     function animateScroll(timestamp, initialScroll, amountToScroll){
       const totalElapsedTime = (timestamp - initialTime) / duration;
       const easedProgress = easeInOutQuad(totalElapsedTime);
-      if(totalElapsedTime < 1){
+      if(totalElapsedTime <= 1){
         gridRef.current.scrollTo(0, initialScroll + amountToScroll * easedProgress);
+
+
+        //Reshape the focus line
+        reshapeLineOfFocus();
+
         animationIdRef.current = requestAnimationFrame((timestamp) => animateScroll(timestamp, initialScroll, amountToScroll));
       }
+      else{ //Finalizer
+        cleanUpFunction(initialScroll, amountToScroll);
+        if(focusLineRef.current){
+          findNearestCard(getFocusLineDimensions.centerY);
+        }
+      }
     }
-    
     animationIdRef.current = requestAnimationFrame((timestamp) => initiate(timestamp, scrollTarget.current))
   }
   
@@ -213,34 +230,99 @@ export const SnappingScroller = ({ data, onFocus}) => {
     applyTransformation();
   },[data])
 
+  
+
+  function reshapeLineOfFocus(){
+    const lineProperties = getFocusLineDimensions();
+    const cardIndex = findNearestCard(lineProperties.centerY);
+    const cardProperties = getCardProperties(cardIndex);
 
 
+    function isIntersecting(elementA, elementB){
+      const topA = elementA.top;
+      const topB = elementB.top;
+      const bottomA = elementA.top + elementA.height;
+      const bottomB = elementB.top + elementB.height;
+
+      return topA <= bottomB && topB <= bottomA;
+    }
+
+
+
+    function calculateIntersection(card, line){ //This function should only be run if there's an intersection
+      //Vertical intersection      
+      const cardBottom = card.top + card.height;
+      const lineBottom = line.top + line.height;
+      const vIntersectionStart = card.top >= line.top ? card.top : line.top;
+      const vIntersectionEnd = cardBottom <= lineBottom ? cardBottom : lineBottom;
+
+
+      //Horizontal intersection
+      const cardRight = card.left + card.width;
+      const lineRight = line.left + line.width;
+      const hIntersectionStart = card.left >= line.left ? card.left : line.left;
+      const hIntersectionEnd = cardRight <= lineRight ? cardRight : lineRight;
+
+
+      return {verticalIntersection: {vIntersectionStart, vIntersectionEnd}, horizontalIntersection:{hIntersectionStart, hIntersectionEnd}}
+    }
+
+      
+
+      if(!isIntersecting(cardProperties, lineProperties)){
+        focusLineRef.current.style.opacity = 0.0;
+        console.log("No intersection");
+      }else{
+        focusLineRef.current.style.opacity = 1.;
+        const intersection = calculateIntersection(cardProperties, lineProperties);
+        console.log(intersection);
+      }
+  }
+
+
+  function findNearestCard(yValue){ //Returns the index of the card in the cardsRef.current array
+    if(cardsRef.current){
+      let nearestDistance = null;
+      let nearestCard = null;
+      cardsRef.current.forEach((element, index) => {
+        if(nearestDistance == null){
+          nearestDistance = Math.abs(yValue - getCardProperties(index).centerY);
+          nearestCard = index;
+        }
+        let distance = Math.abs(yValue - getCardProperties(index).centerY);
+        if(distance < nearestDistance){
+          nearestDistance = distance;
+          nearestCard = index
+        }
+      });
+      return nearestCard;
+    }
+  }
+  
+  
   //onFocus
   useEffect(() => {
     if(focusRef.current != null){
       if(focusRef.current.firstChild.data == "Lisbon"){
-        console.log("Entrou")
         fetch("http://192.168.1.229:5000/capitals/image/something")
         .then((res) => res.json())
         .then((URIs) => {
-          console.log(URIs)
           onFocus(URIs);
         });
       }
     }
-
+    
   },[focusRef.current])
-
-
-  useEffect(() => {
-    if(imageURIs.length > 0){
-      console.log(imageURIs)
-    }
-  },[imageURIs])
-
-
-
   
+  function renderCircle(radius, top, left, color){
+    return (<svg width={2*radius} height={2*radius} style={{position: "fixed", top: top, left:left, transform: "translate(-50%,-50%)"}}>
+      <circle r={radius} cx={radius} cy={radius} fill={color}>
+      </circle>
+    </svg>)
+  }
+
+
+
   return (
     <Container>
       <Grid ref={gridRef} onScroll={scrollHandler}>
@@ -252,7 +334,15 @@ export const SnappingScroller = ({ data, onFocus}) => {
           ))}
         <Padding />
       </Grid>
-      {data.length > 0 && <FocusLine></FocusLine>}
+      {data.length > 0 && <FocusLine ref={focusLineRef}></FocusLine>}
+      {/* {lineOfFocusRef.current && (() => {
+        const closestElement = findNearestCard(getLineOfFocusProperties().center);
+        const {top: top, width: width, height: height, left: left} = closestElement.getBoundingClientRect();
+        const center = top + height/2;
+        const midway = left + width/2;
+        return renderCircle(2, center, midway, "green");        
+      })()}
+      {lineOfFocusRef.current && renderCircle(1, getLineOfFocusProperties().center, getLineOfFocusProperties().midway, "blue")} */}
     </Container>   
   );
 };
