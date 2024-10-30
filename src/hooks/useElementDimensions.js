@@ -1,21 +1,23 @@
 import {useRef} from 'react'
 
-export const useElementDimensions = () => {
-    const elementRef = useRef(null);
+export const useElementDimensions = (initialisedValue) => {
+    const elementRef = useRef(initialisedValue);
 
-    function getDimensions(){
+    function getDimensions(index){
         if(!elementRef.current) return null;
-        const {
-            top:top,
-            left:left,
-            height: height,
-            width:width} = elementRef.current.getBoundingClientRect();
-        const bottom = top + height;
-        const right = left + width;
-        const centerX = left + width/2;
-        const centerY = top + height/2;
-
-        return {top, left, bottom, right, height, width, centerX, centerY}
+        let element;
+        if(Array.isArray(elementRef.current)){
+            if(index == undefined) return null;
+            if(index < 0) return null;
+            element = elementRef.current[index];
+        }else{
+            element = elementRef.current;
+        }
+        const { top:top, left:left, height: height, width:width} = element.getBoundingClientRect();
+        const scrollTop = element.scrollTop;
+        const scrollHeight = element.scrollHeight;
+        const scrollMax = scrollHeight - height;
+        return {top, left, bottom: top + height, right: left + width, height, width, centerX: left + width/2, centerY: top + height/2, scrollTop, scrollHeight, scrollMax}
     }
 
   return {elementRef, getDimensions}

@@ -68,43 +68,16 @@ function clamp(value, min, max){
 
 //Component
 export const SnappingScroller = ({ data, onFocus}) => {
-  const gridRef = useRef(null);
-  const cardsRef = useRef([]);
   const scrollTarget = useRef(0);
   const acumulator = useRef(0);
   const animationIdRef = useRef(undefined);
   const cardSnappingPositions = useRef([])      //The center positions of each card, starting at 0
   const focusRef = useRef(null);
-  const [imageURIs, setImageURIs] = useState([])
-  const lineOfFocusRef = useRef(undefined)
-  
 
-  const {elementRef: focusLineRef, getDimensions: getFocusLineDimensions} = useElementDimensions();
+  const {elementRef: gridRef, getDimensions:getGridDimensions} = useElementDimensions(null);
+  const {elementRef: cardArrayRef, getDimensions: getCardDimensions} = useElementDimensions([]);
+  const {elementRef: focusLineRef, getDimensions: getFocusLineDimensions} = useElementDimensions(null);
 
-
-  //Element Properties
-  function getGridProperties() {
-    if (gridRef.current) {
-      const { top: top, height: height } = gridRef.current.getBoundingClientRect();
-      const scrollHeight = gridRef.current.scrollHeight;
-      const scrollTop = gridRef.current.scrollTop;
-      return { top, height, center: top + height / 2, scrollHeight, maxScroll: scrollHeight - height, scrollTop};
-    }
-    return undefined;
-  }
-  
-  function getCardProperties(index) {
-    if (cardsRef.current && cardsRef.current[index] != null ) {
-      const { top: top, height: height, width: width, left:left } = cardsRef.current[index].getBoundingClientRect();
-      return { top, height, centerY: top + height / 2, centerX: left + width/2 };
-    }
-    return undefined;
-  }
-  
-  function getLineOfFocusProperties(){
-    const {top: top, left: left, width: width, height: height} = lineOfFocusRef.current.getBoundingClientRect();
-    return {top, left, width, height, centerY: top + height/2, centerX: left + width/2}
-  }
 
   ///Triggers when the grid scrolls
   function scrollHandler() {
@@ -112,9 +85,9 @@ export const SnappingScroller = ({ data, onFocus}) => {
   }
 
   function applyTransformation(){
-    const { top: gridTop, height: gridHeight } = getGridProperties();
-    cardsRef.current.forEach((card, index) => {
-      const { centerY: cardCenterY } = getCardProperties(index);
+    const { top: gridTop, height: gridHeight } = getGridDimensions();
+    cardArrayRef.current.forEach((card, index) => {
+      const { centerY: cardCenterY } = getCardDimensions(index);
       const cardRelativeCenterY = cardCenterY - gridTop; //Relative to the grid
       const cardNormalizedCenterY = cardRelativeCenterY/ gridHeight; //Normalized to the grid's height
 
@@ -133,7 +106,7 @@ export const SnappingScroller = ({ data, onFocus}) => {
   function wheelHandler(e) {
     e.preventDefault();
     acumulator.current += e.deltaY * 0.5;
-    acumulator.current = clamp(acumulator.current, 0, getGridProperties().maxScroll);
+    acumulator.current = clamp(acumulator.current, 0, getGridDimensions().scrollMax);
     let previousValue = scrollTarget.current
     scrollTarget.current = snapToCard(acumulator.current);
     if(previousValue != scrollTarget.current){ //Only animates if there's a new scrollTarget
@@ -145,8 +118,8 @@ export const SnappingScroller = ({ data, onFocus}) => {
   function calculateSnappingPositions() {
     const gridRowGap = parseFloat(window.getComputedStyle(gridRef.current).getPropertyValue("grid-row-gap"))
     cardSnappingPositions.current = []
-    for(let i = 0; i < cardsRef.current.length; i++){
-      const position = i * (gridRowGap + getCardProperties(i).height);
+    for(let i = 0; i < cardArrayRef.current.length; i++){
+      const position = i * (gridRowGap + getCardDimensions(i).height);
       cardSnappingPositions.current.push(position)
     }
   }
@@ -165,7 +138,7 @@ export const SnappingScroller = ({ data, onFocus}) => {
 
   function findCardByPosition(scrollValue){
     for(let i = 0; i < cardSnappingPositions.current.length; i++){
-      if(scrollValue == cardSnappingPositions.current[i]){return cardsRef.current[i]}
+      if(scrollValue == cardSnappingPositions.current[i]){return cardArrayRef.current[i]}
     }
     return undefined;
   }
@@ -179,7 +152,7 @@ export const SnappingScroller = ({ data, onFocus}) => {
     let initialTime;
     function initiate(timestamp, destination){
       initialTime = timestamp;
-      let initialScroll = getGridProperties().scrollTop;
+      let initialScroll = getGridDimensions().scrollTop;
       let amountToScroll = destination - initialScroll;
       animateScroll(timestamp, initialScroll, amountToScroll);
     }
@@ -222,12 +195,15 @@ export const SnappingScroller = ({ data, onFocus}) => {
   }, [data]);
 
   useEffect(()=>{
-    cardsRef.current = cardsRef.current.filter((card) => card !=null)
-    calculateSnappingPositions();
+      cardArrayRef.current = cardArrayRef.current.filter((card) => card !=null)
+      calculateSnappingPositions();
   },[data])
 
   useEffect(() => {
-    applyTransformation();
+
+      applyTransformation();
+
+      console.dir(focusLineRef.current);
   },[data])
 
   
@@ -235,7 +211,7 @@ export const SnappingScroller = ({ data, onFocus}) => {
   function reshapeLineOfFocus(){
     const lineProperties = getFocusLineDimensions();
     const cardIndex = findNearestCard(lineProperties.centerY);
-    const cardProperties = getCardProperties(cardIndex);
+    const cardProperties = getCardDimensions(cardIndex);
 
 
     function isIntersecting(elementA, elementB){
@@ -281,15 +257,15 @@ export const SnappingScroller = ({ data, onFocus}) => {
 
 
   function findNearestCard(yValue){ //Returns the index of the card in the cardsRef.current array
-    if(cardsRef.current){
+    if(cardArrayRef.current){
       let nearestDistance = null;
       let nearestCard = null;
-      cardsRef.current.forEach((element, index) => {
+      cardArrayRef.current.forEach((element, index) => {
         if(nearestDistance == null){
-          nearestDistance = Math.abs(yValue - getCardProperties(index).centerY);
+          nearestDistance = Math.abs(yValue - getCardDimensions(index).centerY);
           nearestCard = index;
         }
-        let distance = Math.abs(yValue - getCardProperties(index).centerY);
+        let distance = Math.abs(yValue - getCardDimensions(index).centerY);
         if(distance < nearestDistance){
           nearestDistance = distance;
           nearestCard = index
@@ -328,7 +304,7 @@ export const SnappingScroller = ({ data, onFocus}) => {
       <Grid ref={gridRef} onScroll={scrollHandler}>
         <Padding />
           {data.map((element, index) => (
-            <Card key={index} ref={(el) => (cardsRef.current[index] = el)}>
+            <Card key={index} ref={(el) => (cardArrayRef.current[index] = el)}>
               {element["Capital city"]}
             </Card>
           ))}
