@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useElementDimensions } from "@hooks/useElementDimensions";
+import { getElementDimensions } from "src/utils/ElementDimensions";
 
 const Container = styled.div`
   position: absolute;
@@ -78,15 +79,21 @@ export const SnappingScroller = ({ data, onFocus}) => {
   const {elementRef: cardArrayRef, getDimensions: getCardDimensions} = useElementDimensions([]);
   const {elementRef: focusLineRef, getDimensions: getFocusLineDimensions} = useElementDimensions(null);
 
-
   ///Triggers when the grid scrolls
   function scrollHandler() {
+    console.log(cardArrayRef.current)
     applyTransformation();
   }
 
   function applyTransformation(){
     const { top: gridTop, height: gridHeight } = getGridDimensions();
     cardArrayRef.current.forEach((card, index) => {
+      if(!card){
+        console.log("Mighty Error");
+        return;
+      }
+
+
       const { centerY: cardCenterY } = getCardDimensions(index);
       const cardRelativeCenterY = cardCenterY - gridTop; //Relative to the grid
       const cardNormalizedCenterY = cardRelativeCenterY/ gridHeight; //Normalized to the grid's height
@@ -148,7 +155,7 @@ export const SnappingScroller = ({ data, onFocus}) => {
     if(animationIdRef.current){
       cancelAnimationFrame(animationIdRef.current)
     }
-    
+
     let initialTime;
     function initiate(timestamp, destination){
       initialTime = timestamp;
@@ -185,28 +192,18 @@ export const SnappingScroller = ({ data, onFocus}) => {
   }
   
 
-  //Event listeners (Put everything together)
+  //Event listeners
   useEffect(() => {
     const grid = gridRef.current;
     gridRef.current.addEventListener("wheel", wheelHandler, { passive: false });
+    
+    cardArrayRef.current = cardArrayRef.current.filter((card) => card !=null)
+    calculateSnappingPositions();
+    applyTransformation();
     return () => {
         grid.removeEventListener("wheel", wheelHandler);
     };
-  }, [data]);
-
-  useEffect(()=>{
-      cardArrayRef.current = cardArrayRef.current.filter((card) => card !=null)
-      calculateSnappingPositions();
-  },[data])
-
-  useEffect(() => {
-
-      applyTransformation();
-
-      console.dir(focusLineRef.current);
-  },[data])
-
-  
+  }, [data]);  
 
   function reshapeLineOfFocus(){
     const lineProperties = getFocusLineDimensions();
@@ -245,18 +242,27 @@ export const SnappingScroller = ({ data, onFocus}) => {
 
       
 
-      if(!isIntersecting(cardProperties, lineProperties)){
-        focusLineRef.current.style.opacity = 0.0;
-        console.log("No intersection");
-      }else{
-        focusLineRef.current.style.opacity = 1.;
-        const intersection = calculateIntersection(cardProperties, lineProperties);
-        console.log(intersection);
-      }
+
+    if(!focusLineRef.current){
+      console.log("Eworror")
+      return;
+    } 
+    if(!isIntersecting(cardProperties, lineProperties)){
+      focusLineRef.current.style.opacity = 0.0;
+      console.log("No intersection");
+    }else{
+      focusLineRef.current.style.opacity = 1.;
+      const intersection = calculateIntersection(cardProperties, lineProperties);
+      console.log(intersection);
+    }
   }
 
 
   function findNearestCard(yValue){ //Returns the index of the card in the cardsRef.current array
+    if(cardArrayRef.current.length === 0){
+      console.log("Errror in the find nearest card")
+      return;
+    }
     if(cardArrayRef.current){
       let nearestDistance = null;
       let nearestCard = null;
@@ -290,12 +296,6 @@ export const SnappingScroller = ({ data, onFocus}) => {
     
   },[focusRef.current])
   
-  function renderCircle(radius, top, left, color){
-    return (<svg width={2*radius} height={2*radius} style={{position: "fixed", top: top, left:left, transform: "translate(-50%,-50%)"}}>
-      <circle r={radius} cx={radius} cy={radius} fill={color}>
-      </circle>
-    </svg>)
-  }
 
 
 
@@ -311,14 +311,6 @@ export const SnappingScroller = ({ data, onFocus}) => {
         <Padding />
       </Grid>
       {data.length > 0 && <FocusLine ref={focusLineRef}></FocusLine>}
-      {/* {lineOfFocusRef.current && (() => {
-        const closestElement = findNearestCard(getLineOfFocusProperties().center);
-        const {top: top, width: width, height: height, left: left} = closestElement.getBoundingClientRect();
-        const center = top + height/2;
-        const midway = left + width/2;
-        return renderCircle(2, center, midway, "green");        
-      })()}
-      {lineOfFocusRef.current && renderCircle(1, getLineOfFocusProperties().center, getLineOfFocusProperties().midway, "blue")} */}
     </Container>   
   );
 };
