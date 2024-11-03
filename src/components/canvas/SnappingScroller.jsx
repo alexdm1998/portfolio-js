@@ -67,30 +67,25 @@ function clamp(value, min, max){
 
 
 //Auxiliary functions
-function applyTransformation(grid, cards){
+function updateCardsStyle(grid, cards){
   const gridDimensions = getElementDimensions(grid);
   if(!gridDimensions) return;
   const {top: gridTop, height: gridHeight} = gridDimensions;
 
   cards.forEach((card) => {
-    if(!card){
-      console.log(card + ": card isn't valid");
-      return;
-    }
-
+    if(!card){return}
 
     const { centerY: cardCenterY } = getElementDimensions(card);
-    const cardRelativeCenterY = cardCenterY - gridTop; //Relative to the grid
-    const cardNormalizedCenterY = cardRelativeCenterY / gridHeight; //Normalized to the grid's height
+    const cardRelativeCenterY = cardCenterY - gridTop;
+    const cardNormalizedCenterY = cardRelativeCenterY / gridHeight;
+    const isVisible = cardNormalizedCenterY <= 1 && cardNormalizedCenterY >= 0;
+    
 
-    if (cardNormalizedCenterY <= 1 && cardNormalizedCenterY >= 0) {
-      const translation = Math.sin(cardNormalizedCenterY * Math.PI) * 100;
-      card.style.transform = `translate(-${translation}%, 0%)`;
-      card.style.opacity = Math.sin(Math.PI * cardNormalizedCenterY)
-    }else{
-      card.style.transform = `translate(0%, 0%)`;
-      card.style.opacity = 0;
-    }
+    const translation = isVisible ? Math.sin(cardNormalizedCenterY * Math.PI) * 100 : 0;
+    const opacity = isVisible ? Math.sin(cardNormalizedCenterY * Math.PI) : 0;
+
+    card.style.transform = `translate(-${translation}%, 0%)`;
+    card.style.opacity = opacity;
   });
 }
 
@@ -125,6 +120,89 @@ function calculateSnappingPositions(grid, cardsArray) {
 
 
 
+//ScrollTo Animation
+function animateScrollTo(animationIdReference, scrollTargetRef, grid, lineOfFocus, cardsArrayRef){
+  
+  let initialTime;
+  function initiate(timestamp, destination){
+    initialTime = timestamp;
+    let initialScroll = getElementScroll(grid).scrollTop;
+    let amountToScroll = destination - initialScroll;
+    animateScroll(timestamp, initialScroll, amountToScroll);
+  }
+  
+  
+  let duration = 500;
+  function animateScroll(timestamp, initialScroll, amountToScroll){
+    const totalElapsedTime = (timestamp - initialTime) / duration;
+    const easedProgress = easeInOutQuad(totalElapsedTime);
+    if(totalElapsedTime <= 1){
+      grid.scrollTo(0, initialScroll + amountToScroll * easedProgress);
+      
+      
+      //Reshape the focus line
+      //reshapeLineOfFocus();
+      
+      
+      animationIdReference.current = requestAnimationFrame((timestamp) => animateScroll(timestamp, initialScroll, amountToScroll));
+    }
+    else{ //Finalizer
+      cleanUpFunction(initialScroll, amountToScroll);
+      if(lineOfFocus.current){
+        //findNearestCard(getElementDimensions(lineOfFocus.current), cardsArrayRef);
+      }
+    }
+  }
+  
+  function cleanUpFunction(initialScroll, amountToScroll){ //This function certifies that the final scroll position is exactly the one requested initially.
+    grid.scrollTo(0, initialScroll + amountToScroll);
+  }
+
+  //Cancels previous animation chain on (sometimes multiple) Wheel event triggers.
+  if(animationIdReference.current) cancelAnimationFrame(animationIdReference.current);
+
+  animationIdReference.current = requestAnimationFrame((timestamp) => initiate(timestamp, scrollTargetRef.current))
+
+  
+}
+
+
+
+function findNearestCard(yValue, cardArrayRef){ //Returns the index of the card in the cardsRef.current array
+  if(cardArrayRef.current.length === 0){
+    console.log("Errror in the find nearest card")
+    return;
+  }
+  if(cardArrayRef.current){
+    let nearestDistance = null;
+    let nearestCard = null;
+    cardArrayRef.current.forEach((card, index) => {
+      const cardDimensions = getElementDimensions(card)
+      if(!cardDimensions){
+        console.log("Erororororor")
+      }
+
+      //
+      const {centerY: cardCenterY} = cardDimensions;
+      if(nearestDistance == null){
+        nearestDistance = Math.abs(yValue - cardCenterY);
+        nearestCard = index;
+      }
+
+      //
+      let distance = Math.abs(yValue - cardCenterY);
+      if(distance < nearestDistance){
+        nearestDistance = distance;
+        nearestCard = index
+      }
+    });
+    return cardArrayRef.current[nearestCard];
+  }
+}
+
+
+
+
 
 
 
@@ -140,16 +218,29 @@ export const SnappingScroller = ({ data, onFocus }) => {
   const lineOfFocusRef = useRef(null);
   const cardArrayRef = useRef([]);
 
-  ///Triggers when the grid scrolls
+  
+
+  //Events
+
+  /**
+   * 
+   * Custom onScroll event entry point.
+   * Calls updateCardTransform to set the 
+   * 
+   */
   function scrollHandler() {
-    applyTransformation(gridRef.current, cardArrayRef.current);
+    updateCardsStyle(gridRef.current, cardArrayRef.current);
   }
 
-
-  //When a wheel event is detected (User Input)
+  /**
+   * 
+   * Mouse wheel event handler (User input)
+   * @param {WheelEvent} e Mouse wheel (or equivalent) event.
+   * 
+   *  
+   */
   function wheelHandler(e) {
     e.preventDefault();
-    
     const gridScrollDimensions = getElementScroll(gridRef.current);
     if(!gridScrollDimensions){
       console.log("The grid scroll dimensions aren't truthy: " + gridScrollDimensions)
@@ -162,58 +253,9 @@ export const SnappingScroller = ({ data, onFocus }) => {
     let previousValue = scrollTarget.current
     scrollTarget.current = snapToCard(acumulator.current, cardSnappingPositions.current);
     if(previousValue != scrollTarget.current){ //Only animates if there's a new scrollTarget
-      focusRef.current = findCardByPosition(scrollTarget.current);
-      animateScrollTo()
+      focusRef.current = findNearestCard(scrollTarget.current, cardArrayRef);
+      animateScrollTo(animationIdRef, scrollTarget, gridRef.current, lineOfFocusRef, cardArrayRef)
     } 
-  }
-
-
-  function findCardByPosition(scrollValue){
-    for(let i = 0; i < cardSnappingPositions.current.length; i++){
-      if(scrollValue == cardSnappingPositions.current[i]){return cardArrayRef.current[i]}
-    }
-    return undefined;
-  }
-
-  //ScrollTo Animation
-  function animateScrollTo(){
-    if(animationIdRef.current){
-      cancelAnimationFrame(animationIdRef.current)
-    }
-
-    let initialTime;
-    function initiate(timestamp, destination){
-      initialTime = timestamp;
-      let initialScroll = getElementScroll(gridRef.current).scrollTop;
-      let amountToScroll = destination - initialScroll;
-      animateScroll(timestamp, initialScroll, amountToScroll);
-    }
-    
-    function cleanUpFunction(initialScroll, amountToScroll){ //This function certifies that the final scroll position is exactly the one requested initially.
-      gridRef.current.scrollTo(0, initialScroll + amountToScroll);
-    }
-
-    let duration = 500;
-    function animateScroll(timestamp, initialScroll, amountToScroll){
-      const totalElapsedTime = (timestamp - initialTime) / duration;
-      const easedProgress = easeInOutQuad(totalElapsedTime);
-      if(totalElapsedTime <= 1){
-        gridRef.current.scrollTo(0, initialScroll + amountToScroll * easedProgress);
-
-
-        //Reshape the focus line
-        //reshapeLineOfFocus();
-
-        animationIdRef.current = requestAnimationFrame((timestamp) => animateScroll(timestamp, initialScroll, amountToScroll));
-      }
-      else{ //Finalizer
-        cleanUpFunction(initialScroll, amountToScroll);
-        if(lineOfFocusRef.current){
-          findNearestCard(getElementDimensions(lineOfFocusRef.current));
-        }
-      }
-    }
-    animationIdRef.current = requestAnimationFrame((timestamp) => initiate(timestamp, scrollTarget.current))
   }
   
   
@@ -223,8 +265,8 @@ export const SnappingScroller = ({ data, onFocus }) => {
       console.log("Line properties doesn't evaluate as true: " + lineProperties);
       return;
     }
-    const cardIndex = findNearestCard(lineProperties.centerY);
-    const cardDimensions = getElementDimensions(cardArrayRef.current[cardIndex]);
+    const card = findNearestCard(lineProperties.centerY);
+    const cardDimensions = getElementDimensions(card);
     if(!cardDimensions){
       console.log("Card properties doesn't evaluate as true: " + cardDimensions);
     }
@@ -276,39 +318,7 @@ export const SnappingScroller = ({ data, onFocus }) => {
   }
   
   
-  function findNearestCard(yValue){ //Returns the index of the card in the cardsRef.current array
-    if(cardArrayRef.current.length === 0){
-      console.log("Errror in the find nearest card")
-      return;
-    }
-    if(cardArrayRef.current){
-      let nearestDistance = null;
-      let nearestCard = null;
-      cardArrayRef.current.forEach((card, index) => {
-        const cardDimensions = getElementDimensions(card)
-        if(!cardDimensions){
-          console.log("Erororororor")
-        }
-
-        //
-        const {centerY: cardCenterY} = cardDimensions;
-        if(nearestDistance == null){
-          nearestDistance = Math.abs(yValue - cardCenterY);
-          nearestCard = index;
-        }
-
-        //
-        let distance = Math.abs(yValue - cardCenterY);
-        if(distance < nearestDistance){
-          nearestDistance = distance;
-          nearestCard = index
-        }
-      });
-      return nearestCard;
-    }
-  }
-  
-  //Event listeners
+  //When data
   useEffect(() => {
     const grid = gridRef.current;
     gridRef.current.addEventListener("wheel", wheelHandler, { passive: false });
@@ -317,7 +327,7 @@ export const SnappingScroller = ({ data, onFocus }) => {
     
     
     cardSnappingPositions.current = calculateSnappingPositions(gridRef.current, cardArrayRef.current);
-    applyTransformation(gridRef.current, cardArrayRef.current);
+    updateCardsStyle(gridRef.current, cardArrayRef.current);
     return () => {
         grid.removeEventListener("wheel", wheelHandler);
     };
@@ -336,9 +346,6 @@ export const SnappingScroller = ({ data, onFocus }) => {
     }
     
   },[focusRef.current])
-  
-  
-  
   
   
   return (
