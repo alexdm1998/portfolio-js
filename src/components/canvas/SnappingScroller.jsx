@@ -1,6 +1,7 @@
-import React, { useRef, useEffect} from "react";
+import React, { useRef, useEffect, useState} from "react";
 import styled from "styled-components";
 import { getElementDimensions, getElementScroll } from "@utils/ElementDimensions";
+import { Card } from "./Card";
 
 const Container = styled.div`
   position: absolute;
@@ -24,20 +25,6 @@ const Grid = styled.div`
   scroll-behavior: auto;
 `;
 
-const Card = styled.div`
-  position: relative;
-  height: 2rem;
-  width: 50%;
-  color: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 2rem;
-  border: 1px solid black;
-  box-sizing: border-box;
-  will-change: transform;
-  font-size: 0.8rem;
-`;
 
 const Padding = styled.div`
   height: 8rem;
@@ -67,28 +54,6 @@ function clamp(value, min, max){
 
 
 //Auxiliary functions
-function updateCardsStyle(grid, cards){
-  const gridDimensions = getElementDimensions(grid);
-  if(!gridDimensions) return;
-  const {top: gridTop, height: gridHeight} = gridDimensions;
-
-  cards.forEach((card) => {
-    if(!card){return}
-
-    const { centerY: cardCenterY } = getElementDimensions(card);
-    const cardRelativeCenterY = cardCenterY - gridTop;
-    const cardNormalizedCenterY = cardRelativeCenterY / gridHeight;
-    const isVisible = cardNormalizedCenterY <= 1 && cardNormalizedCenterY >= 0;
-    
-
-    const translation = isVisible ? Math.sin(cardNormalizedCenterY * Math.PI) * 100 : 0;
-    const opacity = isVisible ? Math.sin(cardNormalizedCenterY * Math.PI) : 0;
-
-    card.style.transform = `translate(-${translation}%, 0%)`;
-    card.style.opacity = opacity;
-  });
-}
-
 function snapToCard(scrollValue, cardSnappingArray){
   let closestValue;
 
@@ -220,6 +185,8 @@ export const SnappingScroller = ({ data, onFocus }) => {
 
   
 
+  const [gridProperties, setGridProperties] = useState({gridTop: 0, gridHeight: 0})
+
   //Events
 
   /**
@@ -229,7 +196,9 @@ export const SnappingScroller = ({ data, onFocus }) => {
    * 
    */
   function scrollHandler() {
-    updateCardsStyle(gridRef.current, cardArrayRef.current);
+    const gridDimensions = getElementDimensions(gridRef.current);
+    if(!gridDimensions) return;
+    setGridProperties({gridTop: gridDimensions.top, gridHeight: gridDimensions.height})
   }
 
   /**
@@ -324,10 +293,13 @@ export const SnappingScroller = ({ data, onFocus }) => {
     gridRef.current.addEventListener("wheel", wheelHandler, { passive: false });
     
     cardArrayRef.current = cardArrayRef.current.filter((card) => card !=null);
+
+
+    console.log(cardArrayRef.current);
     
     
     cardSnappingPositions.current = calculateSnappingPositions(gridRef.current, cardArrayRef.current);
-    updateCardsStyle(gridRef.current, cardArrayRef.current);
+    //updateCardsStyle(gridRef.current, cardArrayRef.current);
     return () => {
         grid.removeEventListener("wheel", wheelHandler);
     };
@@ -347,15 +319,16 @@ export const SnappingScroller = ({ data, onFocus }) => {
     
   },[focusRef.current])
   
+
+
+
   
   return (
     <Container>
       <Grid ref={gridRef} onScroll={scrollHandler}>
         <Padding />
           {data.map((element, index) => (
-            <Card key={index} ref={(el) => (cardArrayRef.current[index] = el)}>
-              {element["Capital city"]}
-            </Card>
+            <Card key={index} ref={(el) => (cardArrayRef.current[index] = el)} text={element["Capital city"]} grid={gridProperties}/>
           ))}
         <Padding />
       </Grid>
