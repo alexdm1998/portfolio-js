@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useCapitals } from "@contexts/CapitalsContext";
 import { useTimezone } from "@contexts/TimeContext";
-import { SnappingScroller } from "./SnappingScroller";
+import { SnappingScroller } from "../snappingScroller/SnappingScroller";
 import { CapitalCollage } from "./CapitalCollage";
 
 export const CapitalCards = () => {

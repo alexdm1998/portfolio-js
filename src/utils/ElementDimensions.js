@@ -51,3 +51,34 @@ export function getElementScroll(element){
   const scrollMax = scrollHeight - height;
   return {scrollTop, scrollHeight, scrollMax}
 }
+
+
+export function getElementBorders(element){
+  const elementDimensions = getElementDimensions(element);
+  const elementStyle = window.getComputedStyle(element);
+  if(!elementDimensions){
+    console.log("Element dimensions aren't truthy " + element);
+    return;  
+  }
+  const borderRadius = {
+    topLeftBorder: elementStyle.borderTopLeftRadius,
+    topRightBorder: elementStyle.borderTopRightRadius,
+    bottomLeftBorder: elementStyle.borderBottomLeftRadius,
+    bottomRightBorder: elementStyle.borderBottomRightRadius
+  }
+
+  //Top-Left corner
+  borderRadius.topLeftBorder
+  const topLeftCenter = {
+    centerY: 0 + elementStyle.borderTopLeftRadius,
+    centerX: 0 + elementStyle.borderTopLeftRadius
+  }
+
+
+//Continue
+
+  const cubicBezierCurve = `M0 ${borderRadius.topLeftBorder} C `
+
+  
+  
+}

@@ -19,7 +19,9 @@ export const RaycastProvider = ({ children }) => {
 
   return (
     <RaycastContext.Provider value={hitObject}>
-      <HitContext.Provider value={registerHit}>{children}</HitContext.Provider>
+      <HitContext.Provider value={registerHit}>
+        {children}
+      </HitContext.Provider>
     </RaycastContext.Provider>
   );
 };
