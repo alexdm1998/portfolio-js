@@ -6,7 +6,9 @@
                 "@contexts/*" : ["src/contexts/*"],
                 "@styles/*" : ["src/styles/*"],
                 "@components/*" : ["src/components/*"],
-                "@UI/*" : ["src/components/UI/*"]
+                "@UI/*" : ["src/components/UI/*"],
+                "@hooks/*" : ["src/hooks/*"],
+                "@utils/*" : ["src/utils/*"]
         }
     },
     "exclude": ["node_modules", "dist"]

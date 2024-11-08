@@ -75,7 +75,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (toFetch) {
-      fetch("https://portfolio-backend-5ach.onrender.com/weather/famalicao")
+      fetch("http://192.168.1.229:5000/weather/famalicao")
         .then((response) => response.json())
         .then((data) => {
           setWeatherData(data);

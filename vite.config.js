@@ -10,7 +10,9 @@ export default defineConfig({
       {find: '@contexts', replacement: '/src/contexts'},
       {find: '@styles', replacement: '/src/styles'},
       {find: '@components', replacement: '/src/components'},
-      {find: '@UI', replacement: '/src/components/UI'}
+      {find: '@UI', replacement: '/src/components/UI'},
+      {find: '@hooks', replacement: '/src/hooks'},
+      {find: '@utils', replacement: '/src/utils'}
     ]
   }
 })

@@ -8,7 +8,10 @@ const Padding = styled.div`
 
 const Card = styled.div`
   border-radius: 1rem;
+  border: 1px solid #d8d8d855;
   overflow: hidden;
+  background-color: #c3bfbf12;
+  box-shadow: 0.25rem .25rem .75rem rgba(0, 0, 0, 0.185);
 `
 
 const Image = styled.img`
@@ -17,21 +20,21 @@ const Image = styled.img`
   position: relative;
   display: flex;
   object-fit: cover;
-  box-shadow: 0.25rem .25rem .75rem rgba(0, 0, 0, .05);
 `
 
 const Details = styled.div`
-  background-color: black;
   height: 20px;
 `
 
+
 export const ImageCard = ({url}) => {
+
   return (
     <Padding>
       <Card>
         <Image src={url}></Image>
         <Details></Details>
-      </Card>
+      </Card>     
     </Padding>
   )
 }

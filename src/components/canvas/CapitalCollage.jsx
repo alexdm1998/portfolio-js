@@ -29,7 +29,7 @@ const GridColumn = styled.div`
 
 export const CapitalCollage = ({ capitalImages }) => {
   useEffect(() => {
-    console.log("Here");
+    console.log("Hereyo");
     console.log(capitalImages);
   }, [capitalImages]);
 
