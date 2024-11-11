@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { Hero } from "./components/hero/Hero";
-import Gallery from "./components/containers/Gallery";
-import Introducer from "./components/containers/Introducer";
-import Contact from "./components/containers/Contact";
-import { Navbar } from "./components/navbar/Navbar";
-import { useTheme } from "./contexts/ThemeContext";
-import { useNavigation } from "./contexts/NavigationContext";
+import { Hero } from "../components/hero/Hero";
+import Gallery from "../components/containers/Gallery";
+import Introducer from "../components/containers/Introducer";
+import Contact from "../components/containers/Contact";
+import { Navbar } from "../components/navbar/Navbar";
+import { useTheme } from "../contexts/ThemeContext";
+import { useNavigation } from "../contexts/NavigationContext";
 
 const Background = styled.div`
   position: relative;
