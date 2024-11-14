@@ -3,7 +3,7 @@ import { App } from "../pages/App";
 import { ErrorPage } from "../pages/ErrorPage";
 import { DevLog } from "../pages/DevLog";
 
-const modules = import.meta.glob("../devlogs/*.jsx", { eager: true });
+const modules = import.meta.glob(["../devlogs/DL_*.jsx", "!../devlogs/DL_Template.jsx"], { eager: true });
 
 const devLogRoutes = Object.keys(modules).map((modulePath) => {
   const moduleExports = modules[modulePath];

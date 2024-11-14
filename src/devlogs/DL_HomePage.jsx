@@ -1,17 +1,10 @@
 import React from "react";
-import styled from "styled-components";
+import { DL_Template } from "./DL_Template";
 
-const Container = styled.div`
-  font-family: inherit;
-  position: relative;
-  padding: 5% 10%;
-  font-size: 0.8rem;
-  box-sizing: border-box;;
-`;
 
 export const DL_HomePage = () => {
   return (
-    <Container>
+    <DL_Template>
       <h1>Developer Logs</h1>
       <p>
         The following are some of my developer notes, which I consider important
@@ -25,6 +18,6 @@ export const DL_HomePage = () => {
       <p>
         They are loosely documented.
       </p>
-    </Container>
+    </DL_Template>
   );
 };

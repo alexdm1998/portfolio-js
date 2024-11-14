@@ -236,6 +236,13 @@ export const SnappingScroller = ({ data, onFocus }) => {
   }
 
 
+  useEffect(()=> {
+    const gridDimensions = getElementDimensions(gridRef.current);
+    if(!gridDimensions) return;
+    setGridProperties({gridTop: gridDimensions.top, gridHeight: gridDimensions.height})
+  },[gridRef.current])
+
+
   return (
     <Container>
       <Grid ref={gridRef} onScroll={scrollHandler}>
