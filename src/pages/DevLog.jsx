@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Outlet, Link } from "react-router-dom";
 import { useRouterConfigContext } from "@contexts/RouterConfigContext";
 import styled from "styled-components";
+import { NavList } from "@components/navList/NavList";
 
 const Background = styled.div`
   position: relative;
@@ -66,33 +67,27 @@ export const DevLog = () => {
   const [childRoutes, setChildRoutes] = useState(null);
   const getRouteChildren = useRouterConfigContext();
 
-  useEffect(() => {
-    setChildRoutes(getRouteChildren(<DevLog />));
-  }, []);
-
-  function prunePrefix(name) {
-    console.log(name);
-    return name.includes("_") ? name.split("_")[1] : name;
+  //Returns an extra parameter with a nav name.
+  function formatRouteNames(array) {
+    return array.map((element) => {
+      let navName = element.path.replace(/(?!^)([A-Z])/g, " $1");
+      element.navName = navName;
+      return element;
+    });
   }
+
+  useEffect(() => {
+    let routes = getRouteChildren(<DevLog />);
+    routes = formatRouteNames(routes);
+    setChildRoutes(routes);
+  }, []);
 
   return (
     <Background $isDarkMode={"light"}>
       <PageLayout>
         <LeftNavBar>
-          <StyledLink to={"/"}>Home</StyledLink>
-          <ul>
-            {childRoutes &&
-              childRoutes.map((route, index) => {
-                console.dir(route.element);
-                return (
-                  <li key={index}>
-                    <StyledLink to={route.path} key={index}>
-                      {prunePrefix(route.element.type.name)}
-                    </StyledLink>
-                  </li>
-                );
-              })}
-          </ul>
+          {/*           <StyledLink to={"/"}>Home Page</StyledLink> */}
+          <NavList linksArray={childRoutes} />
         </LeftNavBar>
         <DevLogContainer>
           <Outlet></Outlet>

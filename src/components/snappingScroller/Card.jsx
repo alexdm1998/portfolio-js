@@ -38,6 +38,9 @@ export const Card = forwardRef(({text, grid}, ref) => {
     const cardCenterY = cardDimensions.centerY;
     const cardRelativeCenterY = cardCenterY - grid.gridTop;
     const cardNormalizedCenterY = cardRelativeCenterY / grid.gridHeight;
+
+    console.log("Relative Center Y: " + cardRelativeCenterY)
+    console.log("Grid Height: " + grid.gridHeight)
     const isVisible = cardNormalizedCenterY <= 1 && cardNormalizedCenterY >= 0;
     
 

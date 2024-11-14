@@ -1,16 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import * as CodeSnippets from "./DLCS_ReactRouter.js";
+import { DL_Template } from "./DL_Template.jsx";
 
-const Container = styled.div`
-  font-family: inherit;
-  position: relative;
-  padding: 5% 10%;
-  font-size: 0.8rem;
-  box-sizing: border-box;
-  text-align: justify;
-`;
+
 
 const CodeSnippet = styled(SyntaxHighlighter).attrs({
   style: gruvboxDark,
@@ -21,372 +16,74 @@ const CodeSnippet = styled(SyntaxHighlighter).attrs({
 })``;
 
 export const DL_ReactRouter = () => {
-  const mainRouterConfigCode = `import React, { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import "./global.css";
-import { NavigationProvider } from "./contexts/NavigationContext.jsx";
-import { ThemeContextProvider } from "./contexts/ThemeContext.jsx";
-import { TimeProvider } from "./contexts/TimeContext.jsx";
-import { KeyboardInputProvider } from "./contexts/KeyboardInputContext.jsx";
-import { CapitalsProvider } from "./contexts/CapitalsContext.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { App } from "./pages/App";
-import { DevLog } from "./pages/DevLog";
-import { ErrorPage } from "./pages/ErrorPage";
-import { DL_HomePage } from "./devlogs/DL_HomePage";
-import { DL_BezierCurves } from "./devlogs/DL_BezierCurves";
-import { DL_ReactRouter } from "./devlogs/DL_ReactRouter";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "DevLog",
-    element: <DevLog />,
-    children: [
-      {
-        path: "",
-        element: <DL_HomePage />,
-      },
-      {
-        path: "BezierCurves",
-        element: <DL_BezierCurves />,
-      },
-      {
-        path: "ReactRouter",
-        element: <DL_ReactRouter />,
-      },
-    ],
-  },
-]);
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ThemeContextProvider>
-      <NavigationProvider>
-        <TimeProvider>
-          <KeyboardInputProvider>
-            <CapitalsProvider>
-              <RouterProvider router={router} />
-            </CapitalsProvider>
-          </KeyboardInputProvider>
-        </TimeProvider>
-      </NavigationProvider>
-    </ThemeContextProvider>
-  </StrictMode>
-);`;
-
-  const routerLinks = `export const DevLog = () => {
-    return (
-        <Background $isDarkMode={"light"}>
-            <PageLayout>
-                <LeftNavBar>
-                    <StyledLink to={"/"}>Home</StyledLink>
-                    <ul>
-                        <li><StyledLink to={"/DevLog"}>DevLog</StyledLink></li>
-                        <li><StyledLink to={"BezierCurves"}>BezierCurves</StyledLink></li>
-                        <li><StyledLink to={"ReactRouter"}>ReactRouter</StyledLink></li>
-                    </ul>
-                </LeftNavBar>
-                <DevLogContainer>
-                    <Outlet></Outlet>
-                </DevLogContainer>
-                <RightPadding/>
-            </PageLayout>
-        </Background>
-    );
-};`;
-
-  const routerConfigCode = `import React from "react";
-import { App } from "./pages/App";
-import { ErrorPage } from "./pages/ErrorPage";
-import { DevLog } from "./pages/DevLog";
-import { DL_HomePage } from "./devlogs/DL_HomePage";
-import { DL_BezierCurves } from "./devlogs/DL_BezierCurves";
-import { DL_ReactRouter } from "./devlogs/DL_ReactRouter";
-
-export const routerConfig = [
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "DevLog",
-    element: <DevLog />,
-    children: [
-      {
-        path: "",
-        element: <DL_HomePage />,
-      },
-      {
-        path: "BezierCurves",
-        element: <DL_BezierCurves />,
-      },
-      {
-        path: "ReactRouter",
-        element: <DL_ReactRouter />,
-      },
-    ],
-  },
-];`;
-
-  const mainWithoutConfigCode = `import React, { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import "./global.css";
-import { NavigationProvider } from "./contexts/NavigationContext.jsx";
-import { ThemeContextProvider } from "./contexts/ThemeContext.jsx";
-import { TimeProvider } from "./contexts/TimeContext.jsx";
-import { KeyboardInputProvider } from "./contexts/KeyboardInputContext.jsx";
-import { CapitalsProvider } from "./contexts/CapitalsContext.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import { routerConfig } from "./routerConfiguration.jsx";
-
-const router = createBrowserRouter(routerConfig);
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ThemeContextProvider>
-      <NavigationProvider>
-        <TimeProvider>
-          <KeyboardInputProvider>
-            <CapitalsProvider>
-              <RouterProvider router={router}/>
-            </CapitalsProvider>
-          </KeyboardInputProvider>
-        </TimeProvider>
-      </NavigationProvider>
-    </ThemeContextProvider>
-  </StrictMode>
-);
-`;
-
-  const RouterConfigContextCode = `import React, { createContext, useContext } from "react";
-import { App } from "../pages/App";
-import { ErrorPage } from "../pages/ErrorPage";
-import { DevLog } from "../pages/DevLog";
-import { DL_HomePage } from "../devlogs/DL_HomePage";
-import { DL_BezierCurves } from "../devlogs/DL_BezierCurves";
-import { DL_ReactRouter } from "../devlogs/DL_ReactRouter";
-
-export const routerConfig = [
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "DevLog",
-    element: <DevLog />,
-    children: [
-      {
-        path: "",
-        element: <DL_HomePage />,
-      },
-      {
-        path: "BezierCurves",
-        element: <DL_BezierCurves />,
-      },
-      {
-        path: "ReactRouter",
-        element: <DL_ReactRouter />,
-      },
-    ],
-  },
-];
-
-const RouterConfigContext = createContext();
-
-export function useRouterConfigContext() {
-  return useContext(RouterConfigContext);
-}
-
-export const RouterConfigProvider = ({ children }) => {
-  function getRouteChildren(element) {
-    if (!React.isValidElement(element)) return null;
-    for (const route of routerConfig) {
-      if (route.element.type == element.type) {
-        if (route.children) {
-          return route.children;
-        }
-      }
-    }
-
-    return null;
-  }
-
   return (
-    <RouterConfigContext.Provider value={getRouteChildren}>
-      {children}
-    </RouterConfigContext.Provider>
-  );
-};
-`;
-
-  const MainRouterContextWrappedCode = `import React, { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import "./global.css";
-import { NavigationProvider } from "./contexts/NavigationContext.jsx";
-import { ThemeContextProvider } from "./contexts/ThemeContext.jsx";
-import { TimeProvider } from "./contexts/TimeContext.jsx";
-import { KeyboardInputProvider } from "./contexts/KeyboardInputContext.jsx";
-import { CapitalsProvider } from "./contexts/CapitalsContext.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import { routerConfig } from "./contexts/RouterConfigContext.jsx";
-
-import { RouterConfigProvider } from "./contexts/RouterConfigContext.jsx";
-
-const router = createBrowserRouter(routerConfig);
-
-
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ThemeContextProvider>
-      <NavigationProvider>
-        <TimeProvider>
-          <KeyboardInputProvider>
-            <CapitalsProvider>
-              <RouterConfigProvider>
-                <RouterProvider router={router}/>
-              </RouterConfigProvider>
-            </CapitalsProvider>
-          </KeyboardInputProvider>
-        </TimeProvider>
-      </NavigationProvider>
-    </ThemeContextProvider>
-  </StrictMode>
-);
-`;
-
-  const DevLogGetChildrenCode = `import React, { useEffect, useState } from "react";
-import { Outlet, Link } from "react-router-dom";
-import { useRouterConfigContext } from "@contexts/RouterConfigContext";
-import styled from "styled-components";
-[...]
-
-export const DevLog = () => {
-  const [childRoutes, setChildRoutes] = useState(null);
-  const getRouteChildren = useRouterConfigContext();
-
-  useEffect(() => {
-    setChildRoutes(getRouteChildren(<DevLog />));
-  }, []);
-
-  function prunePrefix(name) {
-    return name.includes("_") ? name.split("_")[1] : name;
-  }
-
-  return (
-    <Background $isDarkMode={"light"}>
-      <PageLayout>
-        <LeftNavBar>
-          <StyledLink to={"/"}>Home</StyledLink>
-          <ul>
-            {childRoutes &&
-              childRoutes.map((route, index) => {
-                return (
-                  <li key={index}>
-                    <StyledLink to={route.path} key={index}>
-                      {prunePrefix(route.element.type.name)}
-                    </StyledLink>
-                  </li>
-                );
-              })}
-          </ul>
-        </LeftNavBar>
-        <DevLogContainer>
-          <Outlet></Outlet>
-        </DevLogContainer>
-        <RightPadding />
-      </PageLayout>
-    </Background>
-  );
-};
-`;
-
-  const WrongDevLogImports = `import { App } from "../pages/App";
-import { ErrorPage } from "../pages/ErrorPage";
-import { DevLog } from "../pages/DevLog";
-import { DL_HomePage } from "../devlogs/DL_HomePage";
-import { DL_BezierCurves } from "../devlogs/DL_BezierCurves";
-import { DL_ReactRouter } from "../devlogs/DL_ReactRouter";`;
-
-  const DynamicDevLogImports = `import { App } from "../pages/App";
-import { ErrorPage } from "../pages/ErrorPage";
-import { DevLog } from "../pages/DevLog";
-
-const modules = import.meta.glob("../devlogs/*.jsx", { eager: true });
-
-const devLogRoutes = Object.keys(modules).map((modulePath) => {
-  const moduleExports = modules[modulePath];
-  const componentName = modulePath.split("devlogs/")[1].replace(".jsx", "");
-  const Component = moduleExports[componentName];
-  const path = componentName.split("_")[1];
-
-  return {
-    element: <Component />,
-    path,
-  };
-});`;
-
-  return (
-    <Container>
+    <DL_Template>
       <h1>React Router</h1>
       <p>
         In the process of developing this website, I decided to create these
-        devlogs to document some of my journey. Since I wanted it to be somewhat
-        seperate from the portfolio itself, to not clutter the visitor with
-        textual information in the front page, I needed to stray away from the
-        original idea of creating a single page website.
+        devlogs to document some of my journey. Since I wanted these expositions
+        to be somewhat seperate from the portfolio itself, as to not clutter the
+        visitor with heavy textual information in the landing view, I needed to
+        stray away from the original idea of only having a single view.
       </p>
 
       <p>
-        I had never worked with react prior to this project, so I had yet to
-        work with react-router-dom, which was the router I chose for this
-        project given its wide usage and how simple the use case here would be.
+        With that said, there still wasn't any necessity for making this a MPA,
+        as it's a project of a relatively simple order of complexity and doesn't
+        have the need for scalability more than it has the need to be fast (once
+        loaded), which is exactly what SPA is good for and why I went with that
+        approach.
+      </p>
+
+      <p>
+        Yet, I already had an SPA by default, seeing that there was just one
+        page being provided at the root url. What I actually wanted to achieve
+        was the MPA style of navigation without actually requesting for a file
+        with each new url change. To that end, what I actually had to implement
+        was CSR (Client-Side Rendering) and only provide the index.html once.
+        For that, I chose react-router-dom.
       </p>
 
       <h3>The problem</h3>
 
       <p>
-        For this devlog I decided very early on that the left side section of
+        For this devlog, I decided very early on that the left side section of
         these pages would be for navigation. The navigation would be done in a
-        way that allowed the visitor to go directly to any page in the folder
-        devlogs (components with the prefix DL_, i.e.
-        &lt;DL_ReactRouter.jsx&gt;)
+        way that allowed the visitor to go directly to any view defined inside
+        the folder that pertains to devlogs.
       </p>
 
       <p>
-        That meant that the router would need to have a route to every devlog
-        present in the devlogs folder (src/devlogs); The straightfoward solution
-        would be configure the routes by hand in such a way:
+        That meant that the router configuration would need to have a route
+        defined for every devlog present in the devlogs folder (src/devlogs);
+        The straightfoward solution would be configure the routes by hand in
+        such a way:
       </p>
-      <CodeSnippet>{mainRouterConfigCode}</CodeSnippet>
 
-      <p>And to then utilise them as such:</p>
+      <CodeSnippet>{CodeSnippets.mainRouterConfigCode}</CodeSnippet>
 
-      <CodeSnippet>{routerLinks}</CodeSnippet>
+      <p>And to then link to them as such:</p>
+
+      <CodeSnippet>{CodeSnippets.routerLinks}</CodeSnippet>
 
       <p>
-        The problem with this approach is that depending on the number of static
-        routes this file can increase considerably in size, thus decreasing
-        readability. Another consideration to have is the human error. Despite
-        having each devlog with a route of its own, if one forgets to add that
-        route to the navigation on the left section it simply wont display that
-        route. So, ideally, the configuration would be able to inform the
-        component which routes they possess and to which component it relates
-        to. From what I could gather there isn't such a thing in
-        react-router-dom.
+        The problem with this approach is that, depending on the number of
+        devlog views, this file can increase considerably in size, making it
+        less readable — and seeing that it's being manually hardcoded, it's
+        prone to errors, like missing views or misspellings. Not only that, but
+        the fact that this is a manual approach, in turn means taking more time
+        to set up routes each time a file is created/deleted/modified.
       </p>
 
-      <h2>First Step</h2>
+      <p>
+        So, ideally, the configuration would be able to allow components to read
+        routes in the router configuration, which, from what I could gather,
+        isn't a functionality of react-router-dom. For example, to read the
+        children paths of given path.
+      </p>
 
+      <h1>Solution</h1>
+      <h2>Creating a router configuration</h2>
       <p>
         Firstly, let's create a seperate file (routerConfiguration.jsx) for the
         router configuration. This will greatly improve the readability of both
@@ -394,47 +91,48 @@ const devLogRoutes = Object.keys(modules).map((modulePath) => {
         project.
       </p>
 
-      <CodeSnippet>{routerConfigCode}</CodeSnippet>
+      <CodeSnippet>{CodeSnippets.routerConfigCode}</CodeSnippet>
 
       <p>And the main.jsx</p>
-      <CodeSnippet>{mainWithoutConfigCode}</CodeSnippet>
 
-      <h2>Second step</h2>
+      <CodeSnippet>{CodeSnippets.mainWithoutConfigCode}</CodeSnippet>
+
+      <h2>Exposing paths</h2>
       <p>
-        Although the improvement in readability is worth in and of itself, that
+        Although the improvement in readability is worth it in and of itself, that
         was not the end goal of this change. The goal still remains to have
         these static routes be made available for the components to read them.
       </p>
 
       <p>
-        To inform any component listed in these routes the best approach is to
-        transform the routerConfiguration into a useContext that provides the
-        necessary function to get the routes of its children.
+        To inform any component of these routes the best approach is to
+        transform the routerConfiguration into a react context that provides the
+        necessary function to get these routes.
       </p>
 
-      <CodeSnippet>{RouterConfigContextCode}</CodeSnippet>
+      <CodeSnippet>{CodeSnippets.RouterConfigContextCode}</CodeSnippet>
 
       <p>Wrapped around the whole router.</p>
 
-      <CodeSnippet>{MainRouterContextWrappedCode}</CodeSnippet>
+      <CodeSnippet>{CodeSnippets.MainRouterContextWrappedCode}</CodeSnippet>
 
       <p>
-        Then, on the DevLog.jsx component, we can now use the context to call
+        Then, on the DevLog component, we can now use the context to call
         the function getRouteChildren, which will return the children routes —
-        if they happen to exist — of the passed argument. Once the children are
-        retrieved, attach them to a useState and map them into the navigation.
+        if they happen to exist — of the component passed as an argument. Once the children are
+        retrieved, just set them to a useState and map them into the navigation.
       </p>
 
-      <CodeSnippet>{DevLogGetChildrenCode}</CodeSnippet>
+      <CodeSnippet>{CodeSnippets.DevLogGetChildrenCode}</CodeSnippet>
 
       <p>
         By this point, any route added to the routerConfig that is a children of
         the DevLog path, will be automatically mapped into a navigation within
-        the DevLog.jsx component. There's just one final thing that can be done
+        the DevLog component. There's just one final thing that can be done
         to really automate the process.
       </p>
 
-      <h2>Final step of automation</h2>
+      <h2>Automating the route creation</h2>
 
       <p>
         Continuing with the increased levels of automation logic here, the final
@@ -445,55 +143,50 @@ const devLogRoutes = Object.keys(modules).map((modulePath) => {
       </p>
 
       <p>Instead of importing every devlog like so:</p>
-      <CodeSnippet>{WrongDevLogImports}</CodeSnippet>
+      <CodeSnippet>{CodeSnippets.WrongDevLogImports}</CodeSnippet>
       <p>We now make use of the Glob Import provided to us by Vite.</p>
-      <CodeSnippet>{DynamicDevLogImports}</CodeSnippet>
+      <CodeSnippet>{CodeSnippets.DynamicDevLogImports}</CodeSnippet>
       <p>
         It may look worse at first, in terms of readiability, but it's mostly
         string manipulation. This simply imports every file inside the devlogs
         folder with the jsx extension. The second argument defines this import
         as eager, as opposed to lazy.
       </p>
-      <CodeSnippet>
-        {
-          'const modules = import.meta.glob("../devlogs/*.jsx", { eager: true });'
-        }
-      </CodeSnippet>
+      <CodeSnippet>{CodeSnippets.DynamicDevLogImportsExplained}</CodeSnippet>
       <p>Now using this, we can export a dynamic routerConfig, like so:</p>
-      <CodeSnippet>
-        {`export const routerConfig = [
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "DevLog",
-    element: <DevLog />,
-    children: devLogRoutes,
-  },
-];`}
-      </CodeSnippet>
+      <CodeSnippet>{CodeSnippets.FinalRouterConfig}</CodeSnippet>
 
       <h2>Conclusion</h2>
       <p>
-        The final result of this approach, is that now we can not only getRoutes
-        from our react-router-dom dynamically, but we can also automate the
+        The final result of this approach is that now we can, not only getRoutes
+        from our react-router-dom dynamically, but also automate the
         imports for of children routes pertaining to a given parent route,
         making it easy to import a component, create a route and map it in the
         parent component.
       </p>
-
       <p>
-        Caveats to this approach:
-        <ul>
-          <li>
-            The route path is tightly related to the component's name. Example:
-            If the element is &lt;DL_ReactRouter.jsx&gt;, then the path is
-            ReactRouter
-          </li>
-        </ul>
+        If you've already tried this you'll notice that there's an error with
+        this approach that only appears in production, and that is the names
+        shown in the navbar. Eventhough everything works as it should
+        (functionaly), the navigation names listed are unintelligable. That is
+        because in build the components' names are mangled, thus not reflecting
+        the names of the components in the source code. The solution for this is
+        to obviously have the names derive from something else, in this case,
+        the path which itself is derived from the file's name.
       </p>
-    </Container>
+
+      <CodeSnippet>{CodeSnippets.NavNameBeforeChange}</CodeSnippet>
+
+      <p>So we go from this, to this:</p>
+
+      <CodeSnippet>{CodeSnippets.NavNameAfterChange}</CodeSnippet>
+
+      <p>Caveats to this approach:</p>
+      <ul>
+        <li>
+          The route path is tightly related to the component's file name.
+        </li>
+      </ul>
+    </DL_Template>
   );
 };
