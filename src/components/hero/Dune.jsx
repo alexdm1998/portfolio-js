@@ -49,7 +49,7 @@ const Dune_SVG = styled(SVG)`
     #000000 50%,
     #000000
   );
-  mask-position: ${(props) => (props.$navigation === "RP" ? "right" : "0% 0")};
+  mask-position: ${(props) => (props.$navigation === "RP" ? "100% 0%" : "0% 0%")};
   mask-size: 300% 100%;
   transition: mask-position 3s ease-out
     ${(props) =>
@@ -66,10 +66,11 @@ export const Dune = ({
   delayOn = "fadeOut",
   parallaxValue,
   src,
+  onTransitionEnd
 }) => {
   const theme = useTheme();
   const navigation = useNavigation();
-
+  
   return (
     <Dune_Wrapper
       $width={width}
@@ -84,6 +85,7 @@ export const Dune = ({
         $delay={delay}
         $delayOn={delayOn}
         src={src}
+        onTransitionEnd={onTransitionEnd}
       ></Dune_SVG>
     </Dune_Wrapper>
   );

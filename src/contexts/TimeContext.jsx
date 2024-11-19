@@ -1,14 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import React from "react";
+import { useTimezone } from "./TimezoneContext";
 
 const TimeContext = createContext();
-const TimezoneContext = createContext();
 
 export function useTime() {
   return useContext(TimeContext);
-}
-export function useTimezone() {
-  return useContext(TimezoneContext);
 }
 
 const monthLookup = {
@@ -36,6 +33,7 @@ const dayOfWeekLookup = {
 };
 
 export const TimeProvider = ({ children }) => {
+  const {gmtOffset} = useTimezone();
   const [tick, setTick] = useState(0);
   const [time, setTime] = useState(() => {
     const date = new Date();
@@ -50,11 +48,7 @@ export const TimeProvider = ({ children }) => {
       seconds: date.getSeconds(),
     };
   });
-  const [gmtOffset, setGmtOffset] = useState(() => {
-    const date = new Date();
-    return getGMToffset(date);
-  });
-
+  
   function getGMToffset(date) {
     const timezoneOffset = date.getTimezoneOffset();
     const hour = timezoneOffset / 60;
@@ -98,9 +92,7 @@ export const TimeProvider = ({ children }) => {
 
   return (
     <TimeContext.Provider value={time}>
-      <TimezoneContext.Provider value={{ gmtOffset, setGmtOffset }}>
         {children}
-      </TimezoneContext.Provider>
     </TimeContext.Provider>
   );
 };

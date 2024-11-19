@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useCapitals } from "@contexts/CapitalsContext";
-import { useTimezone } from "@contexts/TimeContext";
+import { useTimezone } from "@contexts/TimezoneContext";
 import { SnappingScroller } from "../snappingScroller/SnappingScroller";
 import { CapitalCollage } from "./CapitalCollage";
 

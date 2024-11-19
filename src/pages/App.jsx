@@ -7,6 +7,8 @@ import Contact from "../components/containers/Contact";
 import { Navbar } from "../components/navbar/Navbar";
 import { useTheme } from "../contexts/ThemeContext";
 import { useNavigation } from "../contexts/NavigationContext";
+import { WelcomeView } from "../components/welcome/WelcomeView";
+import { useWelcome } from "@contexts/WelcomeContext";
 
 const Background = styled.div`
   position: relative;
@@ -53,6 +55,11 @@ export const App = () => {
   const [parallaxFactor, setParallaxFactor] = useState();
   const [navbarRender, setNavbarRender] = useState(true);
 
+  const {hasWelcomed, setHasWelcomed} = useWelcome();
+  function unmountWV(){
+    setHasWelcomed(true);
+  }
+
   //Parallax logic
   let scroll;
   const scrollEvent = (e) => {
@@ -89,8 +96,11 @@ export const App = () => {
     };
   }, [homebanner_ref.current]);
 
+  
+
   return (
     <>
+      {!hasWelcomed && <WelcomeView onFadeComplete={unmountWV}></WelcomeView>}
       <Navbar shouldRender={navbarRender} />
       <Background $isDarkMode={theme}>
         <Container onScroll={scrollEvent}>

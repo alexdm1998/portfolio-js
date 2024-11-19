@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { useLoader } from "@react-three/fiber";
 import { useRaycast } from "@contexts/RaycastContext";
-import { useTimezone } from "@contexts/TimeContext";
+import { useTimezone } from "@contexts/TimezoneContext";
 import WorldMap from "@assets/World_Map.png";
 
 export const Sphere = ({ onPointerHandler }) => {

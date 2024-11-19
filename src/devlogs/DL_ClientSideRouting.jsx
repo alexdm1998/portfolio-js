@@ -6,11 +6,11 @@ export const DL_ClientSideRouting = () => {
     <DL_Template>
       <h1>Client Side Routing</h1>
       <p>
-        Despite this appearing like a MPA (Multi-Page Application) due to the
-        fact that it has different routes, it is indeed client side routing
-        doing all the work to keep this neatly in one page. This means that the
-        client only requests a file once to the server (SPA) and from thereon,
-        the client handles all the routing.
+        Despite this appearing to be a MPA (Multi-Page Application) due to the
+        fact that it has different routes, it is indeed a SPA (Single-Page
+        Application). This means that the client only requests a file once to
+        the server. So how can the url be routing to different "pages" of the
+        application?
       </p>
 
       <p>

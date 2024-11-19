@@ -1,11 +1,7 @@
-import React, { useEffect } from "react";
 import styled from "styled-components";
 import { ThreeCanvas } from "./Canvas";
 import { RaycastProvider } from "@contexts/RaycastContext";
 import { OverlayingText } from "./OverlayingText";
-import { useInputs } from "@contexts/KeyboardInputContext";
-import { useCapitals } from "@contexts/CapitalsContext";
-import { useTimezone } from "@contexts/TimeContext";
 import { CapitalCards } from "./CapitalCards";
 
 const Frame = styled.div`
@@ -16,7 +12,7 @@ const Frame = styled.div`
   z-index: -1;
 `;
 
-export const CanvasContainer = () => {
+export const CanvasContainer = ({isDunesTransitioned}) => {
   /* 
   //Revise
   const inputMode = useInputs();
@@ -28,12 +24,16 @@ export const CanvasContainer = () => {
     };
   }, []);
   */
+ 
+
+
+
   return (
     <Frame>
       <RaycastProvider>
         <OverlayingText></OverlayingText>
         <ThreeCanvas></ThreeCanvas>
-        <CapitalCards></CapitalCards>
+        {isDunesTransitioned && <CapitalCards/>}
       </RaycastProvider>
     </Frame>
   );

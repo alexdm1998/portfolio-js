@@ -19,19 +19,7 @@ void main() {
     float r = random(vec2(section_pos, section_pos * 0.37));
     float visibility = 0.0;
     vec3 col = vec3(1.);
-   
-
-    float size = 100.;
-    float prob = 0.9;
-    vec2 pos = floor(1.0 / size * gl_FragCoord.xy);
-    float starValue = random(pos);
-
-    if (starValue > prob) {
-        vec2 center = size * pos + vec2(size, size) * 0.5;
-        float t = 0.9 + 0.2 * sin(time * 8.0 + (starValue - prob) / (1.0 - prob) * 45.0);
-        visibility = 1.0 - distance(gl_FragCoord.xy, center) / (0.5 * size);
-        visibility = visibility * t / (abs(gl_FragCoord.y - center.y)) * t / (abs(gl_FragCoord.x - center.x));
-    } if (random(vUv / 20.0) > 0.996) {
+    if (random(vUv / 20.0) > 0.996) {
         float r = random(vUv);
         visibility += r * sin(time * (r * 5.0) + r * 360.);
     }

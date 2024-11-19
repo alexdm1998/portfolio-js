@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { device } from "../../devices";
-import { useTime, useTimezone } from "@contexts/TimeContext";
+import { useTime} from "@contexts/TimeContext";
+import { useTimezone } from "@contexts/TimezoneContext";
 
 const Container = styled.div`
   margin-inline: 1rem;

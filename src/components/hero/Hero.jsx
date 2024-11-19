@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Dashboard } from "./dashboard/Dashboard";
 import { ViewFrame } from "@styles/ViewFrame.style";
@@ -19,14 +19,20 @@ const HomeFrame = styled(ViewFrame)`
 
 export const Hero = forwardRef((props, ref) => {
   const navigation = useNavigation();
+  const [isDuneTransitioned, setIsDuneTransitioned] = useState(false);
+
+  function handleDuneTransition(bool){
+    setIsDuneTransitioned(bool);
+  }
+
   return (
     <HomeFrame ref={ref}>
-      <Dunes parallaxValue={props.parallaxValue} />
+      <Dunes parallaxValue={props.parallaxValue} onDuneTransitioned={handleDuneTransition}/>
       <Sun parallaxValue={props.parallaxValue} />
       <LeftPlanet />
       <RightPlanet />
       {navigation != "RP" && <Dashboard />}
-      {navigation == "RP" && <CanvasContainer></CanvasContainer>}
+      {navigation == "RP" && <CanvasContainer isDunesTransitioned={isDuneTransitioned}></CanvasContainer>}
     </HomeFrame>
   );
 });

@@ -11,6 +11,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { routerConfig } from "./contexts/RouterConfigContext.jsx";
 
 import { RouterConfigProvider } from "./contexts/RouterConfigContext.jsx";
+import { TimezoneProvider } from "@contexts/TimezoneContext";
+import { WelcomeProvider } from "@contexts/WelcomeContext";
 
 const router = createBrowserRouter(routerConfig);
 
@@ -20,15 +22,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeContextProvider>
       <NavigationProvider>
-        <TimeProvider>
-          <KeyboardInputProvider>
-            <CapitalsProvider>
-              <RouterConfigProvider>
-                <RouterProvider router={router}/>
-              </RouterConfigProvider>
-            </CapitalsProvider>
-          </KeyboardInputProvider>
-        </TimeProvider>
+        <TimezoneProvider>
+          <TimeProvider>
+            <KeyboardInputProvider>
+              <CapitalsProvider>
+                <WelcomeProvider>
+                  <RouterConfigProvider>
+                    <RouterProvider router={router}/>
+                  </RouterConfigProvider>
+                </WelcomeProvider>
+              </CapitalsProvider>
+            </KeyboardInputProvider>
+          </TimeProvider>
+        </TimezoneProvider>
       </NavigationProvider>
     </ThemeContextProvider>
   </StrictMode>

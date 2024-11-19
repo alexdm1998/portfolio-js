@@ -161,8 +161,7 @@ export const SnappingScroller = ({ data, onFocus }) => {
   const gridRef = useRef(null);
 
   const cardArrayRef = useRef([]);
-
-  const [gridProperties, setGridProperties] = useState({gridTop: 0, gridHeight: 0})
+  const [gridScroll, setGridScroll] = useState(0);
 
   //For the focus line
   const [nearestCard, setNearestCard] = useState(null);
@@ -175,9 +174,8 @@ export const SnappingScroller = ({ data, onFocus }) => {
    * 
    */
   function scrollHandler() {
-    const gridDimensions = getElementDimensions(gridRef.current);
-    if(!gridDimensions) return;
-    setGridProperties({gridTop: gridDimensions.top, gridHeight: gridDimensions.height})
+    const gridScrollDimensions = getElementScroll(gridRef.current)
+    setGridScroll(gridScrollDimensions.scrollTop);
     const focusedCard = findClosestToFocus(gridRef, cardArrayRef);
     let focusedCardDetails = getElementDimensions(focusedCard);
     if(focusedCardDetails){
@@ -235,20 +233,12 @@ export const SnappingScroller = ({ data, onFocus }) => {
     onFocus(e);
   }
 
-
-  useEffect(()=> {
-    const gridDimensions = getElementDimensions(gridRef.current);
-    if(!gridDimensions) return;
-    setGridProperties({gridTop: gridDimensions.top, gridHeight: gridDimensions.height})
-  },[gridRef.current])
-
-
   return (
     <Container>
       <Grid ref={gridRef} onScroll={scrollHandler}>
         <Padding />
           {data.map((element, index) => (
-            <Card key={index} ref={(el) => (cardArrayRef.current[index] = el)} text={element["Capital city"]} grid={gridProperties}/>
+            <Card key={index} ref={(el) => (cardArrayRef.current[index] = el)} text={element["Capital city"]} grid={gridRef} gridScroll={gridScroll}/>
           ))}
         <Padding />
       </Grid>
