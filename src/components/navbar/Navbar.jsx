@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Calendar } from "./Calendar";
 import { Navigation_Selector } from "./Navigation_Selector";
 
-const Container = styled.div`
+const Container = styled.nav`
   position: fixed;
   top: 0px;
   height: 5dvh;

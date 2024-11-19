@@ -9,6 +9,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useNavigation } from "../contexts/NavigationContext";
 import { WelcomeView } from "../components/welcome/WelcomeView";
 import { useWelcome } from "@contexts/WelcomeContext";
+import { Footer } from "@components/footer/Footer";
 
 const Background = styled.div`
   position: relative;
@@ -107,13 +108,11 @@ export const App = () => {
           <Hero parallaxValue={parallaxFactor} ref={homebanner_ref} />
           {navigation == "LP" && (
             <>
-              <Introducer />
-              <Gallery />
-              <Contact />
             </>
           )}
           {navigation == "RP"}
         </Container>
+        <Footer></Footer>
       </Background>
     </>
   );
