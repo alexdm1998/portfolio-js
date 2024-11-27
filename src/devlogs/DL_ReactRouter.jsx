@@ -17,7 +17,7 @@ const CodeSnippet = styled(SyntaxHighlighter).attrs({
 
 export const DL_ReactRouter = () => {
   return (
-    <DL_Template>
+    <>
       <h1>React Router</h1>
       <p>
         In the process of developing this website, I decided to create these
@@ -187,6 +187,6 @@ export const DL_ReactRouter = () => {
           The route path is tightly related to the component's file name.
         </li>
       </ul>
-    </DL_Template>
+    </>
   );
 };

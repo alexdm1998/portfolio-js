@@ -3,6 +3,7 @@ import { Outlet, Link } from "react-router-dom";
 import { useRouterConfigContext } from "@contexts/RouterConfigContext";
 import styled from "styled-components";
 import { NavList } from "@components/navList/NavList";
+import { DL_Template } from "@devlogs/DL_Template";
 
 const Background = styled.div`
   position: relative;
@@ -86,11 +87,13 @@ export const DevLog = () => {
     <Background $isDarkMode={"light"}>
       <PageLayout>
         <LeftNavBar>
-          {/*           <StyledLink to={"/"}>Home Page</StyledLink> */}
+          <StyledLink to={"/"}>Home Page</StyledLink>
           <NavList linksArray={childRoutes} />
         </LeftNavBar>
         <DevLogContainer>
-          <Outlet></Outlet>
+          <DL_Template>
+            <Outlet></Outlet>
+          </DL_Template>
         </DevLogContainer>
         <RightPadding />
       </PageLayout>

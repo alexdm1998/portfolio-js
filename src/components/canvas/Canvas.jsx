@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { CycleRaycast } from "@react-three/drei";
 import { useHit } from "@contexts/RaycastContext";
 import { Perf } from "r3f-perf";
-import { ThreeText } from "./ThreeText";
+import { ThreeText} from "./ThreeText";
 import { Globe } from "./Globe";
 import { useCursorInputs } from "@contexts/KeyboardInputContext";
 import { Stars } from "./Stars";
@@ -33,7 +33,10 @@ export const ThreeCanvas = () => {
   return (
     <Canvas {...canvasEvents} camera={{ fov: 100 }}>
       <Suspense fallback={null}>
-        <ambientLight color="#ffffff" intensity={2} />
+        <ambientLight color="#910000" intensity={2.3}></ambientLight>
+        <directionalLight position={[0,0,10]} color="#ff0000" intensity={0.5}/>
+
+        <pointLight position={[4, 4, 3]} intensity={13} color="#ff9102" distance={10} />
         <ThreeText />
         <Globe />
       </Suspense>

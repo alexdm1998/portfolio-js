@@ -8,7 +8,8 @@
                 "@components/*" : ["src/components/*"],
                 "@UI/*" : ["src/components/UI/*"],
                 "@hooks/*" : ["src/hooks/*"],
-                "@utils/*" : ["src/utils/*"]
+                "@utils/*" : ["src/utils/*"],
+                "@devlogs/*" : ["src/devlogs/*"]
         }
     },
     "exclude": ["node_modules", "dist"]

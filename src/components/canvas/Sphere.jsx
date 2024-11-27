@@ -76,8 +76,7 @@ export const Sphere = ({ onPointerHandler }) => {
       onPointerLeave={handlePointerLeave}
     >
       <sphereGeometry args={[2, 32, 32]} />
-      <meshBasicMaterial
-        color="#a92e0b"
+      <meshPhongMaterial
         opacity={1}
         transparent
         map={texture}

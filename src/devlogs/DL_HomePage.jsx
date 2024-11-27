@@ -4,7 +4,7 @@ import { DL_Template } from "./DL_Template";
 
 export const DL_HomePage = () => {
   return (
-    <DL_Template>
+    <>
       <h1>Developer Logs</h1>
       <p>
         The following are some of my developer notes, which I consider important
@@ -18,6 +18,6 @@ export const DL_HomePage = () => {
       <p>
         They are loosely documented.
       </p>
-    </DL_Template>
+    </>
   );
 };

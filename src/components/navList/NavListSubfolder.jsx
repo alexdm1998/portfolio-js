@@ -11,10 +11,13 @@ const Button = styled.button`
   font-size: large;
   text-align: left;
   background-color: ${(props) => {
-    return props.$isVisible ? "black" : "transparent";
+    return props.$isVisible ? "transparent" : "black";
   }};
-  color: ${(props) => (props.$isVisible ? "aliceblue" : "#000000")};
+  color: ${(props) => (props.$isVisible ? "black" : "aliceblue")};
+  border-block: ${(props) => (props.$isVisible ? "0.1rem solid rgb(255, 255, 255)" : "none")};
   transition: background-color 500ms linear;
+
+  box-shadow: 0px 2px 10px 5px #c62b00, 0px 2px 100px 100px #c62b0039;
   &:hover {
     background-color: #5034347b;
   }
@@ -34,15 +37,12 @@ const ListItems = styled.div`
  * Assumptions: Items has items.path
  */
 
-export const NavListSubfolder = ({ folderName, items}) => {
+export const NavListSubfolder = ({ folderName, items }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   return (
     <>
-      <Button
-        onClick={() => setIsVisible(!isVisible)}
-        $isVisible={isVisible}
-      >
+      <Button onClick={() => setIsVisible(!isVisible)} $isVisible={isVisible}>
         {folderName}
       </Button>
       {isVisible && items && (

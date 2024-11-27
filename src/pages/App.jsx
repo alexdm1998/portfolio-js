@@ -108,6 +108,7 @@ export const App = () => {
           <Hero parallaxValue={parallaxFactor} ref={homebanner_ref} />
           {navigation == "LP" && (
             <>
+              
             </>
           )}
           {navigation == "RP"}

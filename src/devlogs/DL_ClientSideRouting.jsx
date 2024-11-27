@@ -3,7 +3,7 @@ import { DL_Template } from "./DL_Template";
 
 export const DL_ClientSideRouting = () => {
   return (
-    <DL_Template>
+    <>
       <h1>Client Side Routing</h1>
       <p>
         Despite this appearing to be a MPA (Multi-Page Application) due to the
@@ -22,6 +22,6 @@ export const DL_ClientSideRouting = () => {
         immediately gave me an error upon requesting anything that wasn't the
         root path.
       </p>
-    </DL_Template>
+    </>
   );
 };
