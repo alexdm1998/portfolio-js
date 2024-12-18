@@ -5,9 +5,7 @@ import { Router } from "./Router";
 import "./global.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <GlobalProviders>
-      <Router/>
-    </GlobalProviders>
-  </StrictMode>
+  <GlobalProviders>
+    <Router />
+  </GlobalProviders>
 );

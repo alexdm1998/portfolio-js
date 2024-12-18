@@ -4,6 +4,8 @@ import { Planet as PlanetTemplate } from "@styles/Planet.style";
 import { HoverScaleWrapper } from "@styles/onHoverScale.style";
 import { useTheme } from "@contexts/ThemeContext";
 import { useNavigation, useSelection } from "@contexts/NavigationContext";
+import { CelestialExperience } from "@experience/CelestialExperience";
+import { useExperienceMemory } from "@contexts/ExperienceMemoryContext";
 
 //Position and transition
 const PositionWrapper = styled.div`
@@ -37,6 +39,10 @@ export const RightPlanet = () => {
   const [isFocus, setFocus] = useState(false); //Focus is either selected (clicked) or mouse over
   const tag = "RP";
 
+
+  const {isRegistered, registerComponent} = useExperienceMemory()
+  const [isFamiliarized, setIsFamiliarized] = useState(isRegistered(tag))
+
   function OutlineHandler() {
     if (navigation == tag) {
       setFocus(true);
@@ -49,16 +55,29 @@ export const RightPlanet = () => {
     OutlineHandler();
   }, [navigation]);
 
+
+  function handleMouseEnter(){
+    setIsFamiliarized(true)
+    setFocus(true)
+  }
+
+  function handleClick(){
+    select(tag)
+    registerComponent(tag)
+  }
+
   return (
     <PositionWrapper>
       <HoverScaleWrapper style={{ borderRadius: "50%" }}>
         <Planet
           $isDarkMode={theme}
           $isFocus={isFocus}
-          onClick={() => select(tag)}
-          onMouseEnter={() => setFocus(true)}
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
           onMouseLeave={OutlineHandler}
         ></Planet>
+
+        <CelestialExperience isLearned={isFamiliarized}/>
       </HoverScaleWrapper>
     </PositionWrapper>
   );

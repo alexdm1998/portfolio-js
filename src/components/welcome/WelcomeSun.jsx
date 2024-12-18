@@ -11,11 +11,14 @@ const Sun = styled.div`
   transform: translate(-50%, 0);
   box-shadow: 0px 2px 10px 5px #c62b00, 0px 2px 100px 100px #c62b0039;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const WelcomeSun = ({ isMagnified }) => {
   const SunRef = useRef(null);
-  const animate = useAnimate(
+  const {start: animate} = useAnimate(
     (elapsed) => {
       const progress = easeOutQuad(elapsed);
       const magnify = Math.min(progress, 1);
@@ -31,5 +34,7 @@ export const WelcomeSun = ({ isMagnified }) => {
     animate();
   }, []);
 
-  return <Sun ref={SunRef}></Sun>;
+  return <Sun ref={SunRef}>
+  </Sun>;
 };
+

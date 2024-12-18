@@ -5,7 +5,7 @@ import { TimezoneProvider } from "@contexts/TimezoneContext";
 import { TimeProvider } from "@contexts/TimeContext";
 import { KeyboardInputProvider } from "@contexts/KeyboardInputContext";
 import { CapitalsProvider } from "@contexts/CapitalsContext";
-import { WelcomeProvider } from "@contexts/WelcomeContext";
+import { ExperienceMemoryProvider } from "@contexts/ExperienceMemoryContext";
 
 
 /**
@@ -20,7 +20,7 @@ export const GlobalProviders = ({ children }) => {
     TimeProvider,
     KeyboardInputProvider,
     CapitalsProvider,
-    WelcomeProvider,
+    ExperienceMemoryProvider
   ];
 
   return (

@@ -9,7 +9,8 @@
                 "@UI/*" : ["src/components/UI/*"],
                 "@hooks/*" : ["src/hooks/*"],
                 "@utils/*" : ["src/utils/*"],
-                "@devlogs/*" : ["src/devlogs/*"]
+                "@devlogs/*" : ["src/devlogs/*"],
+                "@experience/*" : ["src/experience/*"]
         }
     },
     "exclude": ["node_modules", "dist"]

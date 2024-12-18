@@ -17,17 +17,22 @@ const Container = styled.div`
   mask-position: 50% 75%;
 `;
 
-export const WelcomeView = ({onFadeComplete}) => {
+export const WelcomeView = ({ onFadeComplete }) => {
   const ContainerRef = useRef(null);
   const [isSunMagnified, setIsSunMagnified] = useState(false);
   const [isFaded, setIsFaded] = useState(false);
 
-  const animate = useAnimate((elapsed)=>{
-    const fade = Math.min(elapsed, 1);
-    ContainerRef.current.style.opacity = 1.0 - fade;
-  },
-3000, ()=>{setIsFaded(true)})
-
+  const { start: animate, cancel } = useAnimate(
+    (elapsed) => {
+      const fade = Math.min(elapsed, 1);
+      ContainerRef.current.style.opacity = 1.0 - fade;
+      if (fade > 0.5) ContainerRef.current.style.pointerEvents = "none";
+    },
+    3000,
+    () => {
+      setIsFaded(true);
+    }
+  );
 
   useEffect(() => {
     if (isSunMagnified) {
@@ -35,12 +40,18 @@ export const WelcomeView = ({onFadeComplete}) => {
     }
   }, [isSunMagnified]);
 
-
   useEffect(() => {
-    if(isFaded){
+    if (isFaded) {
       onFadeComplete();
     }
-  },[isFaded])
+  }, [isFaded]);
+
+  useEffect(() => {
+    return () => {
+      cancel();
+      onFadeComplete();
+    };
+  }, []);
 
   return (
     <>

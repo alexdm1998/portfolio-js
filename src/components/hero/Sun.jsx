@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useTheme, useThemeSwitch } from "@contexts/ThemeContext";
+import { CelestialExperience} from "@experience/CelestialExperience";
+import { useExperienceMemory } from "@contexts/ExperienceMemoryContext";
 
 const WrapperSun = styled.div`
   position: fixed;
@@ -43,6 +45,10 @@ export const Sun = ({ parallaxValue }) => {
   const theme = useTheme();
   const switchTheme = useThemeSwitch();
 
+  const tag = "Sun"
+  const {isRegistered, registerComponent} = useExperienceMemory()
+  const [isFamiliarized, setIsFamiliarized] = useState(isRegistered(tag))
+
   let parallaxStyle;
   if (!window.matchMedia("(orientation: portrait)").matches) {
     //Perhaps only make this verification run on change of orientation and not every mount.
@@ -55,9 +61,15 @@ export const Sun = ({ parallaxValue }) => {
     };
   }
 
+  function handleClick(){
+    switchTheme()
+    registerComponent(tag)
+  }
+
   return (
     <WrapperSun style={parallaxStyle}>
-      <SunDiv $isDarkSun={theme} onClick={switchTheme} />
+      <SunDiv $isDarkSun={theme} onClick={handleClick} onMouseEnter={() => setIsFamiliarized(true)}/>
+      <CelestialExperience dilation={103} isLearned={isFamiliarized}></CelestialExperience>
     </WrapperSun>
   );
 };
